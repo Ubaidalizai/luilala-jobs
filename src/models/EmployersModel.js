@@ -21,13 +21,15 @@ const employerSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please provide company website'],
     },
-    contact_email: {
+    contactEmail: {
       type: String,
       required: [true, 'Please provide contact email'],
+      unique: [true, 'Provided contact email already exist'],
     },
-    contact_phone: {
+    contactPhone: {
       type: String,
       required: [true, 'Please provide contact phone number'],
+      unique: [true, 'Provided contact phone number already exist'],
     },
     logo: {
       type: String,
