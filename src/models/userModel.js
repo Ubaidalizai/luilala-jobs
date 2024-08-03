@@ -1,5 +1,6 @@
-import mongoose from "mongoose";
-import validator from "validator";
+import mongoose from 'mongoose';
+import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
 import Job from './jobsModel.js';
 
@@ -15,7 +16,7 @@ const userSchema = mongoose.Schema(
       unique: true,
       validate: {
         validator: validator.isEmail,
-        message: "Please enter a valid email address.",
+        message: 'Please enter a valid email address.',
       },
     },
     password: {
@@ -26,7 +27,7 @@ const userSchema = mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      default: "false",
+      default: 'false',
     },
     isActive: {
       type: Boolean,
@@ -34,7 +35,7 @@ const userSchema = mongoose.Schema(
     },
     image: {
       type: String,
-      default: "default-user-image.jpg",
+      default: 'default-user-image.jpg',
     },
     cv: {
       type: String,
@@ -52,6 +53,20 @@ const userSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-const User = mongoose.model("User", userSchema);
+
+userSchema.pre('save', async function (next) {
+  // Only run this function if password was actualy modified
+  if (!this.isModified('password')) return next();
+  // Hash the password with salt of 10
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+userSchema.methods.isPasswordValid = async function (userPassword) {
+  return await bcrypt.compare(userPassword, this.password);
+};
+
+const User = mongoose.model('User', userSchema);
 
 export default User;
