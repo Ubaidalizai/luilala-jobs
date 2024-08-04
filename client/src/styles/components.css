@@ -1,0 +1,33 @@
+ /* Logo styles */
+ .navbar-logo {
+    width: 95px;
+    height: 5px;
+    position: relative;
+    box-shadow: 0 9px 21px #46c7ff, 0 9px 21px #46c7ff;
+    border-radius: 0 0 var(--br-smi) var(--br-smi);
+    background-color: #3191cd;
+  }
+  .navbar-logo-parent {
+    display: flex;
+    align-items: flex-start;
+    max-width: 100%;
+  }
+  .navbar-logo-parent {
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--gap-2xs);
+  }
+  .company-logo-child {
+    width: 46px;
+    height: 41px;
+    position: relative;
+    object-fit: cover;
+  }
+  .company-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: var(--padding-5xs) 0 0;
+  }

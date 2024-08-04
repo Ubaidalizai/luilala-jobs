@@ -1,0 +1,16 @@
+.tabs {
+    margin-bottom: 1.5rem;
+    background-color: white;
+    padding: 4rem;
+    color: white;
+  }
+  
+  .tab {
+    padding: 3rem 4rem;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .tab.active {
+    border-color: white;
+    color: white;
+  }
