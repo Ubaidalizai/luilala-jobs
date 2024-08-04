@@ -1,25 +1,34 @@
 import { Router } from 'express';
 import {
   createEmployer,
+  loginEmployer,
+  logoutCurrentEmployer,
   getAllEmployers,
-  getEmployer,
-  updateEmployer,
-  deleteEmployer,
+  getCurrentEmployerProfile,
+  updateCurrentEmployerProfile,
+  getEmployerByID,
+  updateEmployerByID,
+  deleteEmployerByID,
 } from '../controllers/EmployerController.js';
 
-import { authenticate } from '../middlewares/authMiddleware.js';
+import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-router.route('/').get(authenticate, getAllEmployers);
 router.route('/register').post(createEmployer);
+router.route('/login').post(loginEmployer);
+router.route('/logout').post(logoutCurrentEmployer);
+router
+  .route('/profile')
+  .get(authenticate, getCurrentEmployerProfile)
+  .patch(authenticate, updateCurrentEmployerProfile);
 
+// Admin Routes
+router.use(authenticate, authorizeAdmin);
+router.route('/').get(getAllEmployers);
 router
   .route('/:id')
-  // Get a single employer
-  .get(getEmployer)
-  // Update an existing employer
-  .patch(updateEmployer)
-  // Delete an employer
-  .delete(deleteEmployer);
+  .get(getEmployerByID)
+  .patch(updateEmployerByID)
+  .delete(deleteEmployerByID);
 export default router;
