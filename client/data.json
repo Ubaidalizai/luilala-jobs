@@ -1,0 +1,58 @@
+
+{
+    "data": [
+        {
+            "name": "Introduction to Programming",
+            "image": "https://media.istockphoto.com/id/1399724884/photo/medicine-bottle-and-medical-concept-professional-pharmacist-working-in-office.jpg?s=612x612&w=0&k=20&c=FLcMRwhpQnpo2umsO-JQA7Bg8r74efT2kDT5w-P9A6w=",
+            "price": 49.99,
+            "moreInfoButton": "More Info",
+            "addToCartButton": "Add to Cart"
+          },
+          {
+            "name": "Digital Marketing Fundamentals",
+            "image": "https://media.istockphoto.com/id/1219596627/photo/laboratory-background-microscope-with-lab-glassware.jpg?s=612x612&w=0&k=20&c=8mtS9zgl9m6APs8XSiyO79Guge_yfogZx2aKQKSvaKk=",
+            "price": 79.99,
+            "moreInfoButton": "More Info",
+            "addToCartButton": "Add to Cart"
+          },
+          {
+            "name": "Data Science with Python",
+            "image": "https://media.istockphoto.com/id/523872474/photo/labrotory-glassware.jpg?s=612x612&w=0&k=20&c=xO-GCGQIromaVOhWl-HUBqBq1fVO3aQkFFASxg1AxL4=",
+            "price": 99.99,
+            "moreInfoButton": "More Info",
+            "addToCartButton": "Add to Cart"
+          },
+          {
+            "name": "Web Development for Beginners",
+            "image": "https://media.istockphoto.com/id/1474169815/photo/stethoscope-lying-on-the-tablet-computer-in-front-of-a-doctor-and-patient-sitting-opposite.jpg?s=612x612&w=0&k=20&c=e0xQvIOvzcFxTIn8RLeAwylrygwP84e-_u1lLvs3ONQ=",
+            "price": 59.99,
+            "moreInfoButton": "More Info",
+            "addToCartButton": "Add to Cart"
+          },
+          {
+            "name": "Business Analytics and Intelligence",
+            "image": "https://media.istockphoto.com/id/1012396864/photo/scientists-in-laboratory-working-on-research.jpg?s=612x612&w=0&k=20&c=-Xrz223O3qTaDag_ZN6HF2nLPfSWTwduv7MQ7mcOewg=",
+            "price": 89.99,
+            "moreInfoButton": "More Info",
+            "addToCartButton": "Add to Cart"
+          },
+          {
+            "name": "Artificial Intelligence and Machine Learning",
+            "image": "https://media.istockphoto.com/id/1025834084/photo/development-of-pharmaceutical-products.jpg?s=612x612&w=0&k=20&c=609dEP5opd4llWD47pckip46e0nYMg3QXamc1FoddzI=",
+            "price": 119.99,
+            "moreInfoButton": "More Info",
+            "addToCartButton": "Add to Cart"
+          },
+          {
+            "name": "Project Management Fundamentals",
+            "image": "https://media.istockphoto.com/id/1223773880/photo/doctor-in-protective-suit-sort-and-analyze-swabs-on-corona-virus.jpg?s=612x612&w=0&k=20&c=RcoQDlXdR2yk7MNwkDCAMLIoiZjsBEmaI3aek7Tm1ag=",
+            "price": 69.99,
+            "moreInfoButton": "More Info",
+            "addToCartButton": "Add to Cart"
+          }
+     
+
+    ]
+}
+
+
