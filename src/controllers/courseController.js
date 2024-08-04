@@ -1,12 +1,12 @@
-import Course from "../models/courseModel.js";
-import asyncHandler from "../middlewares/asyncHandler.js";
+import Course from '../models/courseModel.js';
+import asyncHandler from '../middlewares/asyncHandler.js';
 
 // Create a new course
 export const createCourse = asyncHandler(async (req, res) => {
   const newCourse = await Course.create(req.body);
   res.status(201).json({
     success: true,
-    data: [newCourse],
+    data: newCourse,
   });
 });
 
@@ -20,34 +20,34 @@ export const getAllCourses = asyncHandler(async (req, res) => {
 });
 
 // Get a single course
-export const getCourse = asyncHandler(async (req, res) => {
+export const getCourseByID = asyncHandler(async (req, res) => {
   const course = await Course.findById(req.params.id);
   if (!course) {
     res.status(404);
-    throw new Error("Course not found");
+    throw new Error('Course not found');
   }
   res.status(200).json(course);
 });
 
 // Update a course
-export const updateCourse = asyncHandler(async (req, res) => {
+export const updateCourseByID = asyncHandler(async (req, res) => {
   const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
   if (!course) {
     res.status(404);
-    throw new Error("Course not found");
+    throw new Error('Course not found');
   }
   res.status(200).json(course);
 });
 
 // Delete a course
-export const deleteCourse = asyncHandler(async (req, res) => {
+export const deleteCourseByID = asyncHandler(async (req, res) => {
   const course = await Course.findByIdAndDelete(req.params.id);
   if (!course) {
     res.status(404);
-    throw new Error("Course not found");
+    throw new Error('Course not found');
   }
-  res.status(200).json({ message: "Course deleted" });
+  res.status(200).json({ message: 'Course deleted' });
 });
