@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Job from './jobsModel.js';
 import bcrypt from 'bcryptjs';
 
 const employerSchema = mongoose.Schema(
@@ -44,8 +45,16 @@ const employerSchema = mongoose.Schema(
       required: [true, 'Please provide company description'],
     },
   },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
   { timestamps: true }
 );
+
+//Virtual populate
+employerSchema.virtual('jobs', {
+  ref: 'Job',
+  localField: '_id',
+  foreignField: 'empId',
+});
 
 employerSchema.pre('save', async function (next) {
   // Only run this function if password was actually modified

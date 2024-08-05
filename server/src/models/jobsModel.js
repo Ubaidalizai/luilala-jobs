@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Employeer from '../models/EmployersModel.js';
+import Employer from '../models/EmployersModel.js';
 const JobSchema = mongoose.Schema(
   {
     title: {
@@ -48,8 +48,9 @@ const JobSchema = mongoose.Schema(
       required: [true, 'Please provide location'],
     },
     empId: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'Employeer',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Employer',
+      required: true,
     },
     description: {
       type: String,

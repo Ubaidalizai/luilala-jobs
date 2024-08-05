@@ -1,4 +1,5 @@
 import Employer from '../models/EmployersModel.js';
+import Job from '../models/jobsModel.js';
 import generateToken from '../utils/create-token.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
 
@@ -65,7 +66,10 @@ export const logoutCurrentEmployer = (req, res) => {
 
 export async function getAllEmployers(req, res) {
   try {
-    const employers = await Employer.find();
+    const employers = await Employer.find().populate({
+      path: 'jobs',
+      select: 'title minSalary maxSalary',
+    });
     res.status(200).json({
       length: employers.length,
       success: true,
@@ -116,7 +120,7 @@ export const updateCurrentEmployerProfile = asyncHandler(async (req, res) => {
 
 export async function getEmployerByID(req, res) {
   try {
-    const employer = await Employer.findById(req.params.id);
+    const employer = await Employer.findById(req.params.id).populate('jobs');
     if (!employer) {
       return res
         .status(404)
