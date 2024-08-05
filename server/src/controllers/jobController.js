@@ -1,5 +1,5 @@
-import { query } from "express";
-import { find, distinct } from "../models/jobsModel";
+import { query } from 'express';
+import Job from '../models/jobsModel.js';
 
 export async function findJobs(req, res) {
   try {
@@ -19,19 +19,19 @@ export async function findJobs(req, res) {
     const queryObject = {};
 
     if (title) {
-      queryObject.title = { $regex: title, $options: "i" };
+      queryObject.title = { $regex: title, $options: 'i' };
     }
 
     if (keyword) {
-      queryObject.keyword = { $regex: keyword, $options: "i" };
+      queryObject.keyword = { $regex: keyword, $options: 'i' };
     }
 
     if (country) {
-      queryObject.country = { $regex: country, $options: "i" };
+      queryObject.country = { $regex: country, $options: 'i' };
     }
 
     if (city) {
-      queryObject.city = { $regex: city, $options: "i" };
+      queryObject.city = { $regex: city, $options: 'i' };
     }
 
     if (minSalary) {
@@ -43,23 +43,23 @@ export async function findJobs(req, res) {
     }
 
     if (jobType) {
-      queryObject.jobType = { $regex: jobType, $options: "i" };
+      queryObject.jobType = { $regex: jobType, $options: 'i' };
     }
 
     if (salaryType) {
-      queryObject.salaryType = { $regex: salaryType, $options: "i" };
+      queryObject.salaryType = { $regex: salaryType, $options: 'i' };
     }
 
     if (industry) {
-      queryObject.industry = { $regex: industry, $options: "i" };
+      queryObject.industry = { $regex: industry, $options: 'i' };
     }
 
     if (location) {
-      queryObject.location = { $regex: location, $options: "i" };
+      queryObject.location = { $regex: location, $options: 'i' };
     }
 
     if (company) {
-      queryObject.company = { $regex: company, $options: "i" };
+      queryObject.company = { $regex: company, $options: 'i' };
     }
 
     const jobs = await find(queryObject);
@@ -73,15 +73,18 @@ export async function findJobs(req, res) {
 }
 // This function FOR to get all industry jobs
 export async function getIndustries(req, res) {
-  const industries = await distinct("industry");
+  const industries = await distinct('industry');
   res.status(200).json({
     length: industries.length,
     industries,
   });
 }
-
+export const createJob = async (req, res) => {
+  const job = await Job.create(req.body);
+  res.status(201).json(job);
+};
 export async function getCompanys(req, res) {
-  const companys = await distinct("company");
+  const companys = await distinct('company');
   res.status(200).json({
     length: companys.length,
     companys,
@@ -89,7 +92,7 @@ export async function getCompanys(req, res) {
 }
 
 export async function getLocations(req, res) {
-  const locations = await distinct("location");
+  const locations = await distinct('location');
   res.status(200).json({
     length: locations.length,
     locations,
