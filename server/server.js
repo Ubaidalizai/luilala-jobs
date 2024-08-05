@@ -7,6 +7,7 @@ import cors from 'cors';
 import userRouts from './src/routes/userRouts.js';
 import courseRoute from './src/routes/coursRoute.js';
 import employerRoute from './src/routes/EmployerRoute.js';
+import jobRoute from './src/routes/jobsRouts.js';
 
 // utils
 import connectDB from './src/config/db.js';
@@ -32,6 +33,7 @@ app.use(cors(corsOptions));
 app.use('/api/v1/users', userRouts);
 app.use('/api/v1/cours', courseRoute);
 app.use('/api/v1/employer', employerRoute);
+app.use('/api/v1/job', jobRoute);
 
 const port = process.env.PORT || 3000;
 app.listen(port, console.log(`server is running on port ${port}...`));
