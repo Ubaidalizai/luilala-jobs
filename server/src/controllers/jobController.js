@@ -1,4 +1,3 @@
-import { query } from 'express';
 import Job from '../models/jobsModel.js';
 
 export async function findJobs(req, res) {
