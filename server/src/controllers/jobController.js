@@ -1,6 +1,9 @@
 import Job from '../models/jobsModel.js';
+import Employer from '../models/EmployersModel.js';
+import CV from '../models/CV_Model.js';
+import asyncHandler from '../middlewares/asyncHandler.js';
 
-export async function findJobs(req, res) {
+export const findJobs = async (req, res) => {
   try {
     const {
       title,
@@ -69,31 +72,38 @@ export async function findJobs(req, res) {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
 // This function FOR to get all industry jobs
-export async function getIndustries(req, res) {
-  const industries = await distinct('industry');
+export const getIndustries = async (req, res) => {
+  const industries = await Employer.distinct('industry');
   res.status(200).json({
     length: industries.length,
     industries,
   });
-}
+};
 export const createJob = async (req, res) => {
   const job = await Job.create(req.body);
   res.status(201).json(job);
 };
-export async function getCompanys(req, res) {
-  const companys = await distinct('company');
+export const getAllJobs = asyncHandler(async (req, res) => {
+  const jobs = await Job.find();
+  res.status(200).json({
+    count: jobs.length,
+    jobs,
+  });
+});
+export const getCompanys = async (req, res) => {
+  const companys = await CV.distinct('company');
   res.status(200).json({
     length: companys.length,
     companys,
   });
-}
+};
 
-export async function getLocations(req, res) {
-  const locations = await distinct('location');
+export const getLocations = async (req, res) => {
+  const locations = await Job.distinct('location');
   res.status(200).json({
     length: locations.length,
     locations,
   });
-}
+};
