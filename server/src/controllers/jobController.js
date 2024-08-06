@@ -87,6 +87,22 @@ export const createJob = async (req, res) => {
   res.status(201).json(job);
 };
 
+export const getAllJobs = asyncHandler(async (req, res) => {
+  const jobs = await Job.find({});
+  try {
+    const jobs = await Job.find();
+    res.status(200).json({
+      length: jobs.length,
+      jobs,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 export const getEmployerByJobId = asyncHandler(async (req, res) => {
   const { jobId } = req.params;
   if (!jobId) {

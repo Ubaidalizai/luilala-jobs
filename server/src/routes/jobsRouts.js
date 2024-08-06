@@ -12,10 +12,13 @@ import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.route('/').post(createJob).get(getAllJobs);
-router.route('/:jobId/employers').get(getEmployerByJobId);
-router.route('/industry').get(getIndustries);
-router.route('/company').get(getCompanys);
-router.route('/location').get(getLocations);
+router.route('/liveJobs').get(authenticate, authorizeAdmin, getAllLiveJobs);
+router.route('/').get(authenticate, authorizeAdmin, getAllJobs);
+
+router.route('/').post(authenticate, createJob);
+router.route('/:jobId/employers').get(authenticate, getEmployerByJobId);
+router.route('/industry').get(authenticate, getIndustries);
+router.route('/company').get(authenticate, getCompanys);
+router.route('/location').get(authenticate, getLocations);
 
 export default router;
