@@ -13,6 +13,7 @@ import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.route('/').post(createJob).get(getAllJobs);
+router.route('/:jobId/employers').get(getEmployerByJobId);
 router.route('/industry').get(getIndustries);
 router.route('/company').get(getCompanys);
 router.route('/location').get(getLocations);
