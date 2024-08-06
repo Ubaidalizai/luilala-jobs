@@ -2,6 +2,7 @@ import Job from '../models/jobsModel.js';
 import Employer from '../models/EmployersModel.js';
 import CV from '../models/CV_Model.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
+import path from 'path';
 
 export const findJobs = async (req, res) => {
   try {
@@ -87,10 +88,60 @@ export const createJob = async (req, res) => {
 };
 
 export const getAllJobs = asyncHandler(async (req, res) => {
+<<<<<<< Updated upstream
   const jobs = await Job.find({});
+=======
+  try {
+    const jobs = await Job.find();
+    res.status(200).json({
+      length: jobs.length,
+      jobs,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+export const getEmployerByJobId = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+  if (!jobId) {
+    return res.status(400).json({ error: 'JobId is required' });
+  }
+  const job = await Job.findOne({ _id: jobId });
+
+  const employer = await Employer.findOne({ _id: job.empId });
+
+  if (!employer) {
+    return res.status(404).json({ error: 'Employer not found' });
+  }
+
+  if (!job) {
+    return res.status(404).json({ error: 'Job not found' });
+  }
+
+>>>>>>> Stashed changes
   res.status(200).json({
-    count: jobs.length,
-    jobs,
+    id: employer.id,
+    employerName: employer.employerName,
+    natureContent: employer.natureContent,
+    industry: employer.industry,
+    website: employer.website,
+    contactEmail: employer.contactEmail,
+    contactPhone: employer.contactPhone,
+    logo: employer.logo,
+    description: employer.description,
+  });
+});
+export const getJobByid = asyncHandler(async (req, res) => {
+  const job = await Job.findById(req.params.id);
+  if (!job) {
+    return res.status(404).json({ message: 'Job not found' });
+  }
+  res.status(200).json({
+    success: true,
+    data: job,
   });
 });
 
