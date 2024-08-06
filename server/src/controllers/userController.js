@@ -154,6 +154,50 @@ const deleteUserByID = asyncHandler(async (req, res) => {
   }
 });
 
+const applyJob = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+  const userId = req.user;
+
+  const user = await User.findById({ _id: userId });
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  // Check if the user already has a CV
+  if (!user.cv && !req.file) {
+    res.status(400);
+    throw new Error(
+      'No CV uploaded. Please upload your CV to apply for the job.'
+    );
+  }
+
+  // Save the uploaded CV path to the user's profile if a new CV is uploaded
+  if (req.file) {
+    user.cv = req.file.path;
+    await user.save();
+  }
+
+  // Proceed with job application logic
+  const job = await Job.findById(jobId);
+  if (!job) {
+    return res.status(404);
+    throw new Error('Job not found');
+  }
+
+  if (user.appliedJobs.includes(jobId)) {
+    res.status(400);
+    throw new Error('You have already applied for this job.');
+  }
+
+  // Add job ID to user's applied jobs list
+  user.appliedJobs.push(jobId);
+
+  await user.save();
+
+  res.status(200).json({ message: 'Job application successful' });
+});
+
 export {
   createUser,
   loginUser,
@@ -164,4 +208,5 @@ export {
   findUserByID,
   deleteUserByID,
   updateUserById,
+  applyJob,
 };
