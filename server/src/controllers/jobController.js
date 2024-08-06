@@ -87,7 +87,6 @@ export const createJob = async (req, res) => {
   res.status(201).json(job);
 };
 
-
 export const getEmployerByJobId = asyncHandler(async (req, res) => {
   const { jobId } = req.params;
   if (!jobId) {
@@ -105,8 +104,6 @@ export const getEmployerByJobId = asyncHandler(async (req, res) => {
     return res.status(404).json({ error: 'Job not found' });
   }
 
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
   res.status(200).json({
     id: employer.id,
     employerName: employer.employerName,
@@ -119,21 +116,10 @@ export const getEmployerByJobId = asyncHandler(async (req, res) => {
     description: employer.description,
   });
 });
-export const getJobByid = asyncHandler(async (req, res) => {
-  const job = await Job.findById(req.params.id);
-  if (!job) {
-    return res.status(404).json({ message: 'Job not found' });
-  }
-  res.status(200).json({
-    success: true,
-    data: job,
-  });
-});
 
 export const getAllLiveJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
-=======
->>>>>>> Stashed changes
+
   res.status(200).json({
     id: employer.id,
     employerName: employer.employerName,
