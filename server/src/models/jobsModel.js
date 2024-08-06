@@ -60,6 +60,11 @@ const JobSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    liveTime: {
+      type: Date,
+      required: true,
+      default: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
+    },
   },
   { timestamps: true }
 );
