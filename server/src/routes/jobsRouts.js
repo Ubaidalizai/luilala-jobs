@@ -4,6 +4,7 @@ import {
   getAllJobs,
   getAllLiveJobs,
   getCompanys,
+  getEmployerByJobId,
   getIndustries,
   getLocations,
 } from '../controllers/jobController.js';
@@ -11,14 +12,9 @@ import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/liveJobs', authenticate, authorizeAdmin, getAllLiveJobs);
-
-router
-  .route('/')
-  .get(authenticate, authorizeAdmin, getAllJobs)
-  .post(authenticate, createJob);
-// router.route('/industry').get(getIndustries);
-// router.route('/company').get(getCompanys);
-router.route('/location').get(authenticate, getLocations);
+router.route('/').post(createJob).get(getAllJobs);
+router.route('/industry').get(getIndustries);
+router.route('/company').get(getCompanys);
+router.route('/location').get(getLocations);
 
 export default router;
