@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Employer from '../models/EmployersModel.js';
+
 const JobSchema = mongoose.Schema(
   {
     title: {
@@ -66,9 +67,11 @@ const JobSchema = mongoose.Schema(
       default: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
     },
   },
+
   { timestamps: true }
 );
 
 const Job = mongoose.model('Job', JobSchema);
 export default Job;
 // Define a schema for image metadata
+//Virtual populate
