@@ -85,13 +85,23 @@ export const createJob = async (req, res) => {
   const job = await Job.create(req.body);
   res.status(201).json(job);
 };
+
 export const getAllJobs = asyncHandler(async (req, res) => {
-  const jobs = await Job.find();
+  const jobs = await Job.find({});
   res.status(200).json({
     count: jobs.length,
     jobs,
   });
 });
+
+export const getAllLiveJobs = asyncHandler(async (req, res) => {
+  const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
+  res.status(200).json({
+    count: jobs.length,
+    jobs,
+  });
+});
+
 export const getCompanys = async (req, res) => {
   const companys = await CV.distinct('company');
   res.status(200).json({
