@@ -67,9 +67,17 @@ const JobSchema = mongoose.Schema(
       default: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
     },
   },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
 
   { timestamps: true }
 );
+
+JobSchema.virtual('employer', {
+  ref: 'Employer',
+  localField: 'empId',
+  foreignField: '_id',
+  justOne: true,
+});
 
 const Job = mongoose.model('Job', JobSchema);
 export default Job;

@@ -3,6 +3,7 @@ import Employer from '../models/EmployersModel.js';
 import CV from '../models/CV_Model.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
 import path from 'path';
+import { count } from 'console';
 
 export const findJobs = async (req, res) => {
   try {
@@ -74,14 +75,7 @@ export const findJobs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// This function FOR to get all industry jobs
-export const getIndustries = async (req, res) => {
-  const industries = await Employer.distinct('industry');
-  res.status(200).json({
-    length: industries.length,
-    industries,
-  });
-};
+
 export const createJob = async (req, res) => {
   const job = await Job.create(req.body);
   res.status(201).json(job);
@@ -159,18 +153,67 @@ export const getJobByid = asyncHandler(async (req, res) => {
   });
 });
 
-export const getCompanys = async (req, res) => {
-  const companys = await CV.distinct('company');
-  res.status(200).json({
-    length: companys.length,
-    companys,
-  });
-};
-
 export const getLocations = async (req, res) => {
   const locations = await Job.distinct('location');
   res.status(200).json({
     length: locations.length,
     locations,
+  });
+};
+
+// export const getIndustries = async (req, res) => {
+//   try {
+//     const { empId } = req.params;
+
+//     // Find the job with the given employerId and populate the employer field
+//     const job = await Job.findOne(empId).populate('employer');
+
+//     if (!job) {
+//       return res.status(404).json({ error: 'Job not found' });
+//     }
+
+//     if (!job.employer) {
+//       return res.status(404).json({ error: 'Employer not found' });
+//     }
+
+//     // Get the industry of the employer
+//     const industry = job.employer.industry;
+
+//     res.status(200).json({
+//       count: industry.length,
+//       industry,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+export const getIndustries = async (req, res) => {
+  try {
+    // Find all the jobs and populate the employer field
+    const jobs = await Job.find().populate('employer');
+
+    // Create a set to store unique industries
+    const industries = new Set();
+
+    // Iterate through the jobs and add the employer's industry to the set
+    jobs.forEach((job) => {
+      if (job.employer && job.employer.industry) {
+        industries.add(job.employer.industry);
+      }
+    });
+
+    res.status(200).json({
+      count: industries.size,
+      industries: Array.from(industries),
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+export const getCompanys = async (req, res) => {
+  const employer = await Employer.distinct('employerName');
+  res.status(200).json({
+    count: employer.length,
+    employer,
   });
 };
