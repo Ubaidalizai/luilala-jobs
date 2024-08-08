@@ -153,50 +153,37 @@ export const getJobByid = asyncHandler(async (req, res) => {
   });
 });
 
+// export const getLocations = async (req, res) => {
+//   const locations = await Job.distinct('location');
+//   res.status(200).json({
+//     length: locations.length,
+//     locations,
+//   });
+// };
 export const getLocations = async (req, res) => {
-  const locations = await Job.distinct('location');
-  res.status(200).json({
-    length: locations.length,
-    locations,
-  });
+  try {
+    // Find the locations for all live job postings
+    const locations = await Job.distinct('location', { status: 'live' });
+
+    res.status(200).json({
+      count: locations.length,
+      locations,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-// export const getIndustries = async (req, res) => {
-//   try {
-//     const { empId } = req.params;
-
-//     // Find the job with the given employerId and populate the employer field
-//     const job = await Job.findOne(empId).populate('employer');
-
-//     if (!job) {
-//       return res.status(404).json({ error: 'Job not found' });
-//     }
-
-//     if (!job.employer) {
-//       return res.status(404).json({ error: 'Employer not found' });
-//     }
-
-//     // Get the industry of the employer
-//     const industry = job.employer.industry;
-
-//     res.status(200).json({
-//       count: industry.length,
-//       industry,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 export const getIndustries = async (req, res) => {
   try {
-    // Find all the jobs and populate the employer field
-    const jobs = await Job.find().populate('employer');
+    // Find all the live jobs and populate the employer field
+    const liveJobs = await Job.find({ status: 'live' }).populate('employer');
 
     // Create a set to store unique industries
     const industries = new Set();
 
-    // Iterate through the jobs and add the employer's industry to the set
-    jobs.forEach((job) => {
+    // Iterate through the live jobs and add the employer's industry to the set
+    liveJobs.forEach((job) => {
       if (job.employer && job.employer.industry) {
         industries.add(job.employer.industry);
       }
@@ -210,10 +197,61 @@ export const getIndustries = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// export const getIndustries = async (req, res) => {
+//   try {
+//     // Find all the jobs and populate the employer field
+//     const jobs = await Job.find().populate('employer');
+
+//     // Create a set to store unique industries
+//     const industries = new Set();
+
+//     // Iterate through the jobs and add the employer's industry to the set
+//     jobs.forEach((job) => {
+//       if (job.employer && job.employer.industry) {
+//         industries.add(job.employer.industry);
+//       }
+//     });
+
+//     res.status(200).json({
+//       count: industries.size,
+//       industries: Array.from(industries),
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
+// export const getCompanys = async (req, res) => {
+//   const employer = await Employer.distinct('employerName');
+//   res.status(200).json({
+//     count: employer.length,
+//     employer,
+//   });
+// };
 export const getCompanys = async (req, res) => {
-  const employer = await Employer.distinct('employerName');
-  res.status(200).json({
-    count: employer.length,
-    employer,
-  });
+  try {
+    // Fetch all employers with live job postings
+    const employerJobPostings = await Employer.aggregate([
+      {
+        $match: { status: 'live' },
+      },
+      {
+        $group: {
+          _id: '$employerName',
+          count: { $count: {} },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          employerName: '$_id',
+          count: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(employerJobPostings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
