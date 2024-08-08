@@ -76,11 +76,6 @@ export const findJobs = async (req, res) => {
   }
 };
 
-export const createJob = async (req, res) => {
-  const job = await Job.create(req.body);
-  res.status(201).json(job);
-};
-
 export const getAllJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({});
   try {
@@ -97,6 +92,13 @@ export const getAllJobs = asyncHandler(async (req, res) => {
   }
 });
 
+export const createJob = asyncHandler(async (req, res) => {
+  const ndewJob = await Job.create(req.body);
+  res.status(201).json({
+    success: true,
+    data: ndewJob,
+  });
+});
 export const getEmployerByJobId = asyncHandler(async (req, res) => {
   const { jobId } = req.params;
   if (!jobId) {
@@ -131,9 +133,11 @@ export const getAllLiveJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
 
   res.status(200).json({
+    count: jobs.length,
     jobs,
   });
 });
+
 export const getJobByid = asyncHandler(async (req, res) => {
   const job = await Job.findById(req.params.id);
   if (!job) {
@@ -145,17 +149,12 @@ export const getJobByid = asyncHandler(async (req, res) => {
   });
 });
 
-// export const getLocations = async (req, res) => {
-//   const locations = await Job.distinct('location');
-//   res.status(200).json({
-//     length: locations.length,
-//     locations,
-//   });
-// };
 export const getLocations = async (req, res) => {
   try {
-    // Find the locations for all live job postings
-    const locations = await Job.distinct('location', { status: 'live' });
+    // Find the distinct locations for all jobs with a live time
+    const locations = await Job.distinct('location', {
+      liveTime: { $gte: new Date() },
+    });
 
     res.status(200).json({
       count: locations.length,
@@ -169,7 +168,9 @@ export const getLocations = async (req, res) => {
 export const getIndustries = async (req, res) => {
   try {
     // Find all the live jobs and populate the employer field
-    const liveJobs = await Job.find({ status: 'live' }).populate('employer');
+    const liveJobs = await Job.find({
+      liveTime: { $gte: new Date() },
+    }).populate('employer');
 
     // Create a set to store unique industries
     const industries = new Set();
@@ -181,69 +182,60 @@ export const getIndustries = async (req, res) => {
       }
     });
 
-    res.status(200).json({
-      count: industries.size,
-      industries: Array.from(industries),
-    });
+    // Check if the industries set is empty
+    if (industries.size === 0) {
+      res.status(200).json({
+        message:
+          'No live job postings found with associated employer industries.',
+      });
+    } else {
+      res.status(200).json({
+        count: industries.size,
+        industries: Array.from(industries),
+      });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-// export const getIndustries = async (req, res) => {
-//   try {
-//     // Find all the jobs and populate the employer field
-//     const jobs = await Job.find().populate('employer');
 
-//     // Create a set to store unique industries
-//     const industries = new Set();
-
-//     // Iterate through the jobs and add the employer's industry to the set
-//     jobs.forEach((job) => {
-//       if (job.employer && job.employer.industry) {
-//         industries.add(job.employer.industry);
-//       }
-//     });
-
-//     res.status(200).json({
-//       count: industries.size,
-//       industries: Array.from(industries),
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
-// export const getCompanys = async (req, res) => {
-//   const employer = await Employer.distinct('employerName');
-//   res.status(200).json({
-//     count: employer.length,
-//     employer,
-//   });
-// };
 export const getCompanys = async (req, res) => {
   try {
-    // Fetch all employers with live job postings
-    const employerJobPostings = await Employer.aggregate([
-      {
-        $match: { status: 'live' },
-      },
+    const employerData = await Job.aggregate([
       {
         $group: {
-          _id: '$employerName',
-          count: { $count: {} },
+          _id: '$empId',
+          employerName: { $first: '$employer.employerName' },
+          liveJobs: { $sum: 1 },
         },
+      },
+      {
+        $lookup: {
+          from: 'employers',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'employer',
+        },
+      },
+      {
+        $unwind: '$employer',
       },
       {
         $project: {
           _id: 0,
-          employerName: '$_id',
-          count: 1,
+          employerName: { $ifNull: ['$employer.employerName', 'Unknown'] },
+          liveJobs: 1,
         },
       },
     ]);
 
-    res.status(200).json(employerJobPostings);
+    const companies = employerData.map(({ employerName }) => employerName);
+
+    res.status(200).json({
+      count: companies.length,
+      Company: companies,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
