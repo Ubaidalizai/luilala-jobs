@@ -12,7 +12,7 @@ import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.route('/liveJobs').get(authenticate, authorizeAdmin, getAllLiveJobs);
+router.route('/liveJobs').get(authenticate, getAllLiveJobs);
 router.route('/').get(authenticate, authorizeAdmin, getAllJobs);
 
 router.route('/').post(authenticate, createJob);

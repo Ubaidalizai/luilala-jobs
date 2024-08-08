@@ -11,6 +11,7 @@ import {
   findUserByID,
   deleteUserByID,
   updateUserById,
+  applyJob,
 } from '../controllers/userController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
