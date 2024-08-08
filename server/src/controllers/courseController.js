@@ -51,3 +51,25 @@ export const deleteCourseByID = asyncHandler(async (req, res) => {
   }
   res.status(200).json({ message: 'Course deleted' });
 });
+
+export const courseCategories = asyncHandler(async (req, res) => {
+  const result = await Course.aggregate([
+    {
+      $group: {
+        _id: '$category',
+        count: { $sum: 1 },
+        image: { $first: '$image' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category: '$_id',
+        count: 1,
+        image: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({ result });
+});
