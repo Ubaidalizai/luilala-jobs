@@ -110,9 +110,9 @@ export const getEmployerByJobId = asyncHandler(async (req, res) => {
   }
   const job = await Job.findOne({ _id: jobId });
 
-  const employer = await Employer.findOne({ _id: job.empId });
+  const jobs = await Employer.findOne({ _id: job.empId });
 
-  if (!employer) {
+  if (!jobs) {
     return res.status(404).json({ error: 'Employer not found' });
   }
 
@@ -121,15 +121,15 @@ export const getEmployerByJobId = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json({
-    id: employer.id,
-    employerName: employer.employerName,
-    natureContent: employer.natureContent,
-    industry: employer.industry,
-    website: employer.website,
-    contactEmail: employer.contactEmail,
-    contactPhone: employer.contactPhone,
-    logo: employer.logo,
-    description: employer.description,
+    id: jobs.id,
+    employerName: jobs.employerName,
+    natureContent: jobs.natureContent,
+    industry: jobs.industry,
+    website: jobs.website,
+    contactEmail: jobs.contactEmail,
+    contactPhone: jobs.contactPhone,
+    logo: jobs.logo,
+    description: jobs.description,
   });
 });
 
@@ -137,15 +137,7 @@ export const getAllLiveJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
 
   res.status(200).json({
-    id: employer.id,
-    employerName: employer.employerName,
-    natureContent: employer.natureContent,
-    industry: employer.industry,
-    website: employer.website,
-    contactEmail: employer.contactEmail,
-    contactPhone: employer.contactPhone,
-    logo: employer.logo,
-    description: employer.description,
+    jobs,
   });
 });
 export const getJobByid = asyncHandler(async (req, res) => {
