@@ -78,6 +78,7 @@ export const findJobs = async (req, res) => {
 
 export const getAllJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({});
+
   try {
     const jobs = await Job.find();
     res.status(200).json({
@@ -99,6 +100,7 @@ export const createJob = asyncHandler(async (req, res) => {
     data: ndewJob,
   });
 });
+
 export const getEmployerByJobId = asyncHandler(async (req, res) => {
   const { jobId } = req.params;
   if (!jobId) {
@@ -133,8 +135,15 @@ export const getAllLiveJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
 
   res.status(200).json({
-    count: jobs.length,
-    jobs,
+    id: jobs.id,
+    employerName: jobs.employerName,
+    natureContent: jobs.natureContent,
+    industry: jobs.industry,
+    website: jobs.website,
+    contactEmail: jobs.contactEmail,
+    contactPhone: jobs.contactPhone,
+    logo: jobs.logo,
+    description: jobs.description,
   });
 });
 
