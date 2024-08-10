@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const courseSchema = mongoose.Schema(
+const courseSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -19,6 +19,10 @@ const courseSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    category: {
+      type: String,
+      required: true,
+    },
     FAQs: {
       type: String, // The type was misspelled as "teype"
       required: true,
@@ -31,8 +35,13 @@ const courseSchema = mongoose.Schema(
       type: Number,
       default: 4.5,
     },
+    image: {
+      type: String,
+      default:
+        'https://media.istockphoto.com/id/2158807730/video/digital-marketing-workshop-african-american-designer-learning-new-skills.jpg?s=640x640&k=20&c=wtzlRdAVJunMpXn0XEPAn0M6h9RtUcUgE6ktgKu_-UM=',
+    },
   },
   { timestamps: true }
 );
-const Course = mongoose.model("Course", courseSchema);
+const Course = mongoose.model('Course', courseSchema);
 export default Course;
