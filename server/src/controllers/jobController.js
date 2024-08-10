@@ -76,13 +76,9 @@ export const findJobs = async (req, res) => {
   }
 };
 
-export const createJob = async (req, res) => {
-  const job = await Job.create(req.body);
-  res.status(201).json(job);
-};
-
 export const getAllJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({});
+
   try {
     const jobs = await Job.find();
     res.status(200).json({
@@ -95,6 +91,14 @@ export const getAllJobs = asyncHandler(async (req, res) => {
       error: error.message,
     });
   }
+});
+
+export const createJob = asyncHandler(async (req, res) => {
+  const ndewJob = await Job.create(req.body);
+  res.status(201).json({
+    success: true,
+    data: ndewJob,
+  });
 });
 
 export const getEmployerByJobId = asyncHandler(async (req, res) => {
@@ -131,9 +135,18 @@ export const getAllLiveJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
 
   res.status(200).json({
-    jobs,
+    id: jobs.id,
+    employerName: jobs.employerName,
+    natureContent: jobs.natureContent,
+    industry: jobs.industry,
+    website: jobs.website,
+    contactEmail: jobs.contactEmail,
+    contactPhone: jobs.contactPhone,
+    logo: jobs.logo,
+    description: jobs.description,
   });
 });
+
 export const getJobByid = asyncHandler(async (req, res) => {
   const job = await Job.findById(req.params.id);
   if (!job) {
@@ -146,66 +159,92 @@ export const getJobByid = asyncHandler(async (req, res) => {
 });
 
 export const getLocations = async (req, res) => {
-  const locations = await Job.distinct('location');
-  res.status(200).json({
-    length: locations.length,
-    locations,
-  });
-};
-
-// export const getIndustries = async (req, res) => {
-//   try {
-//     const { empId } = req.params;
-
-//     // Find the job with the given employerId and populate the employer field
-//     const job = await Job.findOne(empId).populate('employer');
-
-//     if (!job) {
-//       return res.status(404).json({ error: 'Job not found' });
-//     }
-
-//     if (!job.employer) {
-//       return res.status(404).json({ error: 'Employer not found' });
-//     }
-
-//     // Get the industry of the employer
-//     const industry = job.employer.industry;
-
-//     res.status(200).json({
-//       count: industry.length,
-//       industry,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-export const getIndustries = async (req, res) => {
   try {
-    // Find all the jobs and populate the employer field
-    const jobs = await Job.find().populate('employer');
-
-    // Create a set to store unique industries
-    const industries = new Set();
-
-    // Iterate through the jobs and add the employer's industry to the set
-    jobs.forEach((job) => {
-      if (job.employer && job.employer.industry) {
-        industries.add(job.employer.industry);
-      }
+    // Find the distinct locations for all jobs with a live time
+    const locations = await Job.distinct('location', {
+      liveTime: { $gte: new Date() },
     });
 
     res.status(200).json({
-      count: industries.size,
-      industries: Array.from(industries),
+      count: locations.length,
+      locations,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const getIndustries = async (req, res) => {
+  try {
+    // Find all the live jobs and populate the employer field
+    const liveJobs = await Job.find({
+      liveTime: { $gte: new Date() },
+    }).populate('employer');
+
+    // Create a set to store unique industries
+    const industries = new Set();
+
+    // Iterate through the live jobs and add the employer's industry to the set
+    liveJobs.forEach((job) => {
+      if (job.employer && job.employer.industry) {
+        industries.add(job.employer.industry);
+      }
+    });
+
+    // Check if the industries set is empty
+    if (industries.size === 0) {
+      res.status(200).json({
+        message:
+          'No live job postings found with associated employer industries.',
+      });
+    } else {
+      res.status(200).json({
+        count: industries.size,
+        industries: Array.from(industries),
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getCompanys = async (req, res) => {
-  const employer = await Employer.distinct('employerName');
-  res.status(200).json({
-    count: employer.length,
-    employer,
-  });
+  try {
+    const employerData = await Job.aggregate([
+      {
+        $group: {
+          _id: '$empId',
+          employerName: { $first: '$employer.employerName' },
+          liveJobs: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: 'employers',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'employer',
+        },
+      },
+      {
+        $unwind: '$employer',
+      },
+      {
+        $project: {
+          _id: 0,
+          employerName: { $ifNull: ['$employer.employerName', 'Unknown'] },
+          liveJobs: 1,
+        },
+      },
+    ]);
+
+    const companies = employerData.map(({ employerName }) => employerName);
+
+    res.status(200).json({
+      count: companies.length,
+      Company: companies,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };

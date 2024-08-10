@@ -4,11 +4,7 @@ import '../styles/global.css';
 
 const coursesData = {
   animal: ['Animal Behavior', 'Veterinary Science', 'Wildlife Conservation'],
-  education: [
-    'Teaching Methods',
-    'Educational Psychology',
-    'Curriculum Development',
-  ],
+  education: ['Teaching Methods', 'Educational Psychology', 'Curriculum Development'],
   politics: ['Political Science', 'International Relations', 'Public Policy'],
   // Add more categories and courses as needed
 };
@@ -38,18 +34,14 @@ const AllCourses = () => {
         return acc;
       }, {});
     }
-    return selectedCategory
-      ? { [selectedCategory]: coursesData[selectedCategory] }
-      : coursesData;
+    return selectedCategory ? { [selectedCategory]: coursesData[selectedCategory] } : coursesData;
   };
 
   return (
     <div>
       <div className="bg-white shadow-lg rounded-lg p-6 z-10 lg:p-8">
         <div className="flex flex-col lg:flex-row items-center justify-between w-full">
-          <h1 className="text-4xl font-bold text-gray-800 mb-6 lg:mb-0">
-            Courses
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-6 lg:mb-0">Courses</h1>
           <div className="relative flex items-center w-full max-w-xl">
             <input
               type="search"

@@ -6,18 +6,15 @@ import {
   getCourseByID,
   updateCourseByID,
   deleteCourseByID,
-  courseCategories,
 } from '../controllers/courseController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/categories', courseCategories);
-
 router
   .route('/')
-  .get(getAllCourses)
+  .get(authenticate, getAllCourses)
   .post(authenticate, authorizeAdmin, createCourse);
 
 router

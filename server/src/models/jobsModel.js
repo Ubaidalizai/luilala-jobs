@@ -67,7 +67,10 @@ const JobSchema = mongoose.Schema(
       default: new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000),
     },
   },
+
   { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+
+
 
   { timestamps: true }
 );
