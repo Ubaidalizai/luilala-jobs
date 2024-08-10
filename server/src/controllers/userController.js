@@ -107,7 +107,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
 });
 
 const findUserByID = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id).populate('jobAlerts');
 
   if (user) {
     res.status(200).json(user);
