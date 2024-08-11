@@ -167,3 +167,30 @@ export async function deleteEmployerByID(req, res) {
     res.status(400).json({ success: false, error: error.message });
   }
 }
+
+export const searchEmployerByName = asyncHandler(async (req, res) => {
+  const { name, filter } = req.query;
+  let query = {};
+
+  if (name) {
+    query.employerName = { $regex: name, $options: 'i' };
+  }
+
+  if (filter) {
+    if (/^[A-Z]$/.test(filter)) {
+      query.employerName = { $regex: `^${filter}`, $options: 'i' };
+    }
+    if (/^[0-9]$/.test(filter)) {
+      query.employerName = { $regex: `^${filter}` };
+    }
+  }
+
+  try {
+    const employer = await Employer.find(query);
+    res.status(200).json({
+      employer,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});

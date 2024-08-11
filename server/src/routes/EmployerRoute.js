@@ -9,6 +9,7 @@ import {
   getEmployerByID,
   updateEmployerByID,
   deleteEmployerByID,
+  searchEmployerByName,
 } from '../controllers/EmployerController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
@@ -18,6 +19,9 @@ const router = Router();
 router.route('/register').post(createEmployer);
 router.route('/login').post(loginEmployer);
 router.route('/logout').post(logoutCurrentEmployer);
+
+router.route('/search').get(authenticate, searchEmployerByName);
+
 router
   .route('/profile')
   .get(authenticate, getCurrentEmployerProfile)
