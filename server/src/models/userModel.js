@@ -3,6 +3,7 @@ import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
 import Job from './jobsModel.js';
+import JobAlert from './jobAlertModel.js';
 
 const userSchema = mongoose.Schema(
   {
@@ -49,10 +50,17 @@ const userSchema = mongoose.Schema(
     resetPasswordToken: String,
     resetPasswordExpires: Date,
   },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
   {
     timestamps: true,
   }
 );
+//Virtual populat
+userSchema.virtual('jobAlerts', {
+  ref: 'JobAlert',
+  localField: '_id',
+  foreignField: 'userId',
+});
 
 userSchema.pre('save', async function (next) {
   // Only run this function if password was actualy modified
