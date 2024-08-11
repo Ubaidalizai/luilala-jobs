@@ -22,7 +22,7 @@ router.route('/').post(authenticate, createJob);
 router.route('/:jobId/employers').get(authenticate, getEmployerByJobId);
 router.route('/industry').get(authenticate, getIndustries);
 router.route('/company').get(authenticate, getCompanys);
-router.route('/companyLength').get(authenticate, getCompanysLength);
+router.route('/companyLength').get(getCompanysLength);
 router.route('/location').get(authenticate, getLocations);
 
 export default router;
