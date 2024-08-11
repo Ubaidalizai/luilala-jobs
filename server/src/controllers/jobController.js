@@ -134,17 +134,13 @@ export const getEmployerByJobId = asyncHandler(async (req, res) => {
 export const getAllLiveJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
 
-  res.status(200).json({
-    id: jobs.id,
-    employerName: jobs.employerName,
-    natureContent: jobs.natureContent,
-    industry: jobs.industry,
-    website: jobs.website,
-    contactEmail: jobs.contactEmail,
-    contactPhone: jobs.contactPhone,
-    logo: jobs.logo,
-    description: jobs.description,
-  });
+  res.status(200).json(jobs);
+});
+
+export const getAllLiveJobsLength = asyncHandler(async (req, res) => {
+  const jobs = await Job.countDocuments({ liveTime: { $gte: Date.now() } });
+
+  res.status(200).json(jobs);
 });
 
 export const getJobByid = asyncHandler(async (req, res) => {
@@ -244,6 +240,44 @@ export const getCompanys = async (req, res) => {
       count: companies.length,
       Company: companies,
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getCompanysLength = async (req, res) => {
+  try {
+    const employerData = await Job.aggregate([
+      {
+        $group: {
+          _id: '$empId',
+          employerName: { $first: '$employer.employerName' },
+          liveJobs: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: 'employers',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'employer',
+        },
+      },
+      {
+        $unwind: '$employer',
+      },
+      {
+        $project: {
+          _id: 0,
+          employerName: { $ifNull: ['$employer.employerName', 'Unknown'] },
+          liveJobs: 1,
+        },
+      },
+    ]);
+
+    const companies = employerData.map(({ employerName }) => employerName);
+
+    res.status(200).json(companies.length);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -3,7 +3,9 @@ import {
   createJob,
   getAllJobs,
   getAllLiveJobs,
+  getAllLiveJobsLength,
   getCompanys,
+  getCompanysLength,
   getEmployerByJobId,
   getIndustries,
   getLocations,
@@ -12,13 +14,15 @@ import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.route('/liveJobs').get(authenticate, getAllLiveJobs);
+router.route('/liveJobs').get(getAllLiveJobs);
+router.route('/liveJobsLength').get(getAllLiveJobsLength);
 router.route('/').get(authenticate, authorizeAdmin, getAllJobs);
 
 router.route('/').post(authenticate, createJob);
 router.route('/:jobId/employers').get(authenticate, getEmployerByJobId);
 router.route('/industry').get(authenticate, getIndustries);
 router.route('/company').get(authenticate, getCompanys);
+router.route('/companyLength').get(authenticate, getCompanysLength);
 router.route('/location').get(authenticate, getLocations);
 
 export default router;
