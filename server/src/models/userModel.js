@@ -50,10 +50,11 @@ const userSchema = mongoose.Schema(
     resetPasswordToken: String,
     resetPasswordExpires: Date,
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+
   {
     timestamps: true,
-  }
+  },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 //Virtual populat
 userSchema.virtual('jobAlerts', {
