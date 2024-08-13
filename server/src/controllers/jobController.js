@@ -206,12 +206,22 @@ export const getIndustries = async (req, res) => {
 
 export const getCompanys = async (req, res) => {
   try {
+    const currentDate = new Date();
+
     const employerData = await Job.aggregate([
+      {
+        $match: {
+          $or: [
+            { liveTime: { $gte: currentDate } }, // Include active jobs
+            { liveTime: { $exists: false } }, // Include jobs without liveTime field
+          ],
+        },
+      },
       {
         $group: {
           _id: '$empId',
           employerName: { $first: '$employer.employerName' },
-          liveJobs: { $sum: 1 },
+          activeJobs: { $sum: 1 },
         },
       },
       {
@@ -228,13 +238,26 @@ export const getCompanys = async (req, res) => {
       {
         $project: {
           _id: 0,
-          employerName: { $ifNull: ['$employer.employerName', 'Unknown'] },
-          liveJobs: 1,
+          employerName: {
+            $cond: {
+              if: { $eq: ['$employer.employerName', null] },
+              then: 'Unknown',
+              else: '$employer.employerName',
+            },
+          },
+          activeJobs: 1,
         },
       },
     ]);
 
-    const companies = employerData.map(({ employerName }) => employerName);
+    // Filter out employers with no active jobs
+    const companiesWithActiveJobs = employerData.filter(
+      ({ activeJobs }) => activeJobs > 0
+    );
+
+    const companies = companiesWithActiveJobs.map(
+      ({ employerName }) => employerName.trim() || 'Unknown'
+    );
 
     res.status(200).json({
       count: companies.length,
@@ -247,12 +270,22 @@ export const getCompanys = async (req, res) => {
 
 export const getCompanysLength = async (req, res) => {
   try {
+    const currentDate = new Date();
+
     const employerData = await Job.aggregate([
+      {
+        $match: {
+          $or: [
+            { liveTime: { $gte: currentDate } }, // Include active jobs
+            { liveTime: { $exists: false } }, // Include jobs without liveTime field
+          ],
+        },
+      },
       {
         $group: {
           _id: '$empId',
           employerName: { $first: '$employer.employerName' },
-          liveJobs: { $sum: 1 },
+          activeJobs: { $sum: 1 },
         },
       },
       {
@@ -269,13 +302,26 @@ export const getCompanysLength = async (req, res) => {
       {
         $project: {
           _id: 0,
-          employerName: { $ifNull: ['$employer.employerName', 'Unknown'] },
-          liveJobs: 1,
+          employerName: {
+            $cond: {
+              if: { $eq: ['$employer.employerName', null] },
+              then: 'Unknown',
+              else: '$employer.employerName',
+            },
+          },
+          activeJobs: 1,
         },
       },
     ]);
 
-    const companies = employerData.map(({ employerName }) => employerName);
+    // Filter out employers with no active jobs
+    const companiesWithActiveJobs = employerData.filter(
+      ({ activeJobs }) => activeJobs > 0
+    );
+
+    const companies = companiesWithActiveJobs.map(
+      ({ employerName }) => employerName.trim() || 'Unknown'
+    );
 
     res.status(200).json(companies.length);
   } catch (error) {

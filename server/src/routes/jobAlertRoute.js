@@ -3,6 +3,7 @@ import {
   createJobAlert,
   deleteJobAlert,
   getAllJobAlerts,
+  getAllJobAlertsForUser,
   getJobAlert,
   updateJobAlert,
 } from '../controllers/JobAlertController.js';
@@ -14,6 +15,10 @@ router
   .route('/')
   .post(authenticate, createJobAlert)
   .get(authenticate, getAllJobAlerts);
+
+router
+  .route('/jobAlertsLengthForCurrentUser')
+  .get(authenticate, getAllJobAlertsForUser);
 
 router
   .route('/:id')
