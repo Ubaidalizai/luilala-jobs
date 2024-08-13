@@ -23,6 +23,14 @@ const courseSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    duration: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+    },
     FAQs: {
       type: String, // The type was misspelled as "teype"
       required: true,
