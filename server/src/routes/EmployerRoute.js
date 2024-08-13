@@ -10,6 +10,11 @@ import {
   updateEmployerByID,
   deleteEmployerByID,
   searchEmployerByName,
+  uploadEmployerPhoto,
+  resizeEmployerPhoto,
+  updateEmployerPhoto,
+  updatePassword,
+  employersLogos,
 } from '../controllers/EmployerController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
@@ -21,6 +26,16 @@ router.route('/login').post(loginEmployer);
 router.route('/logout').post(logoutCurrentEmployer);
 
 router.route('/search').get(authenticate, searchEmployerByName);
+router.route('/update-password').patch(authenticate, updatePassword);
+router.route('/logos').get(employersLogos);
+
+router.patch(
+  '/updateMe',
+  authenticate,
+  uploadEmployerPhoto,
+  resizeEmployerPhoto,
+  updateEmployerPhoto
+);
 
 router
   .route('/profile')
