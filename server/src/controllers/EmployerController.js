@@ -1,7 +1,70 @@
+import multer from 'multer';
+import sharp from 'sharp';
+import path from 'path';
+import fs from 'fs';
+
 import Employer from '../models/EmployersModel.js';
 import Job from '../models/jobsModel.js';
 import generateToken from '../utils/create-token.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
+
+// Multer setup
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const __dirname = path.resolve();
+const dir = path.join(__dirname, 'public/img/employers');
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+export const uploadEmployerPhoto = upload.single('photo');
+
+export const resizeEmployerPhoto = asyncHandler(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `employer-${req.user._id}-${Date.now()}.jpeg`;
+  try {
+    await sharp(req.file.buffer)
+      .resize(500, 500)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/employers/${req.file.filename}`);
+  } catch (error) {
+    throw new Error(error);
+  }
+  next();
+});
+
+export const updateEmployerPhoto = asyncHandler(async (req, res) => {
+  const user = await Employer.findByIdAndUpdate(
+    req.user._id,
+    {
+      logo: req.file.filename,
+    },
+    {
+      new: true,
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
 export async function createEmployer(req, res) {
   try {
@@ -99,15 +162,13 @@ export const getCurrentEmployerProfile = asyncHandler(async (req, res) => {
 });
 
 export const updateCurrentEmployerProfile = asyncHandler(async (req, res) => {
-  const { employerName, contactEmail, password } = req.body;
+  const { employerName, contactEmail } = req.body;
   const currentEmployer = await Employer.findById(req.user._id);
 
   if (currentEmployer) {
     currentEmployer.employerName = employerName || currentEmployer.employerName;
     currentEmployer.contactEmail = contactEmail || currentEmployer.contactEmail;
-    if (password) {
-      currentEmployer.password = password;
-    }
+
     await currentEmployer.save();
     res.status(200).json({
       currentEmployer,
@@ -193,4 +254,57 @@ export const searchEmployerByName = asyncHandler(async (req, res) => {
   } catch (error) {
     throw new Error(error);
   }
+});
+
+export const updatePassword = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { password } = req.body;
+
+  const employer = await Employer.findById(_id);
+  if (password) {
+    employer.password = password;
+    employer.save();
+
+    res.json('Password updated');
+  } else {
+    res.json(employer);
+  }
+});
+
+export const employersLogos = asyncHandler(async (req, res) => {
+  const employersLogos = await Employer.aggregate([
+    {
+      $lookup: {
+        from: 'jobs',
+        let: { employerId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$empId', '$$employerId'] },
+                  { $eq: ['$active', true] },
+                  { $gte: ['$liveTime', new Date()] },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'liveJobs',
+      },
+    },
+    {
+      $match: {
+        'liveJobs.0': { $exists: true }, // Ensure the employer has at least one live job
+      },
+    },
+    {
+      $project: {
+        _id: 0, // Exclude the _id field
+        logo: 1, // Project only the logo field
+      },
+    },
+  ]);
+
+  res.status(200).json(employersLogos);
 });
