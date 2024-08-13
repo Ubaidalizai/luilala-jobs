@@ -2,10 +2,11 @@ import nodemailer from 'nodemailer';
 import JobAlert from '../models/jobAlertModel.js';
 import User from '../models/userModel.js';
 import Job from '..//models/jobsModel.js';
-
 export const createJobAlert = async (req, res) => {
   try {
-    const { title, keywords, location, email, userId } = req.body;
+    const { title, keywords, location, email } = req.body;
+    const userId = req.user._id; // Assuming userId is stored in req.user from the authentication middleware
+
     const user = await User.findById(userId);
 
     if (!user) {
@@ -125,6 +126,19 @@ export const getAllJobAlerts = async (req, res) => {
   }
 };
 
+export const getAllJobAlertsForUser = async (req, res) => {
+  try {
+    const userId = req.user._id; // Assuming req.user contains the authenticated user's details
+
+    const jobAlerts = await JobAlert.find({ userId });
+
+    res.status(200).json({
+      count: jobAlerts.length,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
 export const getJobAlert = async (req, res) => {
   try {
     const { id } = req.params;
