@@ -1,7 +1,70 @@
+import multer from 'multer';
+import sharp from 'sharp';
+import path from 'path';
+import fs from 'fs';
 import User from '../models/userModel.js';
 
 import asyncHandler from '../middlewares/asyncHandler.js';
 import generateToken from '../utils/create-token.js';
+
+// Multer setup
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const __dirname = path.resolve();
+const dir = path.join(__dirname, 'public/img/users');
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+const uploadUserPhoto = upload.single('photo');
+
+const resizeUserPhoto = asyncHandler(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user._id}-${Date.now()}.jpeg`;
+  try {
+    await sharp(req.file.buffer)
+      .resize(500, 500)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/users/${req.file.filename}`);
+  } catch (error) {
+    throw new Error(error);
+  }
+  next();
+});
+
+const updateUserPhoto = asyncHandler(async (req, res) => {
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      image: req.file.filename,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
 
 const createUser = asyncHandler(async (req, res) => {
   const { fullName, email, password, isAdmin, image } = req.body;
@@ -205,6 +268,9 @@ export {
   getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateUserPhoto,
   findUserByID,
   deleteUserByID,
   updateUserById,

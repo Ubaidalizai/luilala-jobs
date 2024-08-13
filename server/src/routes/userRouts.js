@@ -11,6 +11,9 @@ import {
   findUserByID,
   deleteUserByID,
   updateUserById,
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateUserPhoto,
   applyJob,
 } from '../controllers/userController.js';
 
@@ -20,6 +23,9 @@ router.route('/').get(authenticate, authorizeAdmin, getAllUsers);
 router.route('/register').post(createUser);
 router.route('/auth').post(loginUser);
 router.route('/logout').post(logoutCurrentUser);
+
+router.patch('/updateMe', authenticate, uploadUserPhoto, resizeUserPhoto, updateUserPhoto);
+
 router
   .route('/profile')
   .get(authenticate, getCurrentUserProfile)
