@@ -1,39 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import FirstImage from '../assets/first.jpg';
-import SecondImage from '../assets/fourth.jpg';
-import ThirdImage from '../assets/second.jpg';
-import FourthImage from '../assets/third.jpg';
+import axios from 'axios'; 
 
 const JobSeeker = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showSlider, setShowSlider] = useState(true);
-
-  const testimonials = [
-    {
-      image: FirstImage,
-      text: '"I\'ve used many CV building sites, but this one is simple, clear and understandable."',
-    },
-    {
-      image: SecondImage,
-      text: '"CV Builder helps give me an idea of the professional wording that a potential employer is looking for."',
-    },
-    {
-      image: ThirdImage,
-      text: '"CV Builder is brilliant! It\'s really great to use when you are stuck on what to say or feel stressed and overwhelmed about writing a CV."',
-    },
-    {
-      image: FourthImage,
-      text: '"CV Builder is great for when you don\'t know where to start and need some help. You are guaranteed to get a professional CV without doing it from scratch."',
-    },
-  ];
-
+  const [testimonials, setTestimonials] = useState([]);
   useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:3000/api/v1/testimonial/getTestimonial'); // Replace with your backend endpoint
+        setTestimonials(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+      }
+    };
+
+    fetchTestimonials();
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
     }, 5000);
 
     return () => clearInterval(interval);
   }, [testimonials.length]);
+
+  if (!testimonials.length) {
+    return <div>Loading testimonials...</div>; // Optional loading state
+  }
 
   return (
     <div className={`container ${showSlider ? '' : 'hidden'} p-4 rounded-lg shadow-lg`}>
@@ -53,5 +46,5 @@ const JobSeeker = () => {
     </div>
   );
 };
-
 export default JobSeeker;
+

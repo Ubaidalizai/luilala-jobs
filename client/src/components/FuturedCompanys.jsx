@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import logo1 from '../assets/logo1.jpg';
+
 
 const FuturedCompanys = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -16,7 +16,7 @@ const FuturedCompanys = () => {
       const allLogos = data.data.map((logo) => logo.logo);
       setLogos(allLogos);
     };
-    console.log(logo1);
+    
     const interval = setInterval(() => {
       setCurrentSlide(
         (prevSlide) => (prevSlide + 1) % Math.ceil(logos.length / slidesPerPage)

@@ -1,8 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import cvBuilder1 from '../assets/cvbuilder2.jpg';
 import { useNavigate } from 'react-router-dom';
 
 export default function CreateCv() {
+  const [liveJobs, setLiveJobs] = useState(0);
+  const [employers, setEmployers] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [liveJobs, employers] = await Promise.all([
+          axios.get('http://127.0.0.1:3000/api/v1/job/liveJobsLength'),
+          axios.get('http://127.0.0.1:3000/api/v1/job/companyLength'),
+        ]);
+
+        setLiveJobs(liveJobs.data);
+        setEmployers(employers.data);
+  
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  });
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -12,7 +33,7 @@ export default function CreateCv() {
   return (
     <>
       <p className="text-slate-100 text-center bg-[#002244] text-lg py-2 sm:py-3">
-        Search 156,089 jobs from 10,070 companies
+        Search {liveJobs} jobs from {employers} companies
       </p>
       <div className="bg-gradient-to-r from-[#002244] to-[#4682B4] py-12 sm:py-16 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 md:px-8">

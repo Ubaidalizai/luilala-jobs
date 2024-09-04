@@ -9,7 +9,6 @@
     padding: 3rem 4rem;
     border-bottom: 2px solid transparent;
   }
-  
   .tab.active {
     border-color: white;
     color: white;
