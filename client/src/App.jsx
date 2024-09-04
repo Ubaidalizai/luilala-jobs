@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from './components/Header';
 import Home from './pages/Home';
+import SearchResults from './components/SearchResults';
+import JobDetails1 from './components/JobDetails';
 import SearchJob from './pages/SearchJob';
 import JobDetails from './pages/JobDetails';
 import CvBuilder from './pages/CvBuilder';
@@ -33,6 +35,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route index element={<Home />} />
+        <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/job-details/:id" element={<JobDetails1 />} />
         <Route path="/searchjob" element={<SearchJob />} />
         <Route path="/courseshome" element={<CoursesHome />} />
         <Route path="/onlinecourses" element={<OnlineCourse />} />

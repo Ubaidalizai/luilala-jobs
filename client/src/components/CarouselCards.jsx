@@ -1,75 +1,35 @@
-// Carousel.js
-// import Swiper core and required modules
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
-// Import Swiper styles
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 
-// Import FontAwesome icons
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+const Carousel = () => {
+  const [jobs, setJobs] = useState([]);
 
-const jobs = [
-  {
-  career: "Software Engineer",
-  salary: "₦100,000 - ₦150,000",
-  location: "San Francisco, CA"
-  },
-  {
-  career: "Marketing Manager",
-  salary: "₦70,000 - ₦90,000",
-  location: "New York, NY"
-  },
-  {
-  career: "Registered Nurse",
-  salary: "₦60,000 - ₦80,000",
-  location: "Seattle, WA"
-  },
-  {
-  career: "Financial Analyst",
-  salary: "₦80,000 - ₦110,000",
-  location: "Chicago, IL"
-  },
-  {
-  career: "Graphic Designer",
-  salary: "₦50,000 - ₦70,000",
-  location: "Los Angeles, CA"
-  },
-  {
-  career: "IT Project Manager",
-  salary: "₦90,000 - ₦120,000",
-  location: "Boston, MA"
-  },
-  {
-  career: "Sales Representative",
-  salary: "₦40,000 - ₦60,000",
-  location: "Atlanta, GA"
-  },
-  {
-  career: "Data Scientist",
-  salary: "₦100,000 - ₦150,000",
-  location: "Seattle, WA"
-  },
-  {
-  career: "Human Resources Specialist",
-  salary: "₦50,000 - ₦70,000",
-  location: "Dallas, TX"
-  },
-  {
-  career: "Mechanical Engineer",
-  salary: "₦80,000 - ₦110,000",
-  location: "Houston, TX"
-  }
-  ];
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:3000/api/v1/job/liveJobs'); // Adjust the URL to your API route
+        setJobs(response.data);
+      } catch (error) {
+        console.error('Error fetching job data:', error);
+      }
+    };
 
-export default () => {
+    fetchJobs();
+  }, []);
+
   return (
     <>
-      <p className='text-center pt-8 bg-gray-200 mx-auto text-lg text-[#002244] '>Here are some jobs you might like. We've based them on your previous search.</p>
+      <p className='text-center pt-8 bg-gray-200 mx-auto text-lg text-[#002244]'>
+        Here are some jobs you might like. We've based them on your previous search.
+      </p>
       <Swiper
         modules={[Navigation, Pagination, Scrollbar, A11y]}
         spaceBetween={40}
@@ -98,8 +58,8 @@ export default () => {
         {jobs.map((job, index) => (
           <SwiperSlide key={index}>
             <div className="bg-gray-100 rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-bold mb-2">{job.career}</h3>
-              <p className="text-gray-600 mb-2">{job.salary}</p>
+              <h3 className="text-lg font-bold mb-2">{job.title}</h3>
+              <p className="text-gray-600 mb-2">{job.salarySign}{job.minSalary}-{job.salarySign}{ job.maxSalary}</p>
               <p className="text-gray-600">
                 <FontAwesomeIcon icon={faLocationDot} className="mr-2" />
                 {job.location}
@@ -111,3 +71,5 @@ export default () => {
     </>
   );
 };
+
+export default Carousel;

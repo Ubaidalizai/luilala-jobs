@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function JobAlerts() {
+    const [liveJobs, setLiveJobs] = useState(0);
+  const [employers, setEmployers] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [liveJobs, employers] = await Promise.all([
+          axios.get('http://127.0.0.1:3000/api/v1/job/liveJobsLength'),
+          axios.get('http://127.0.0.1:3000/api/v1/job/companyLength'),
+        ]);
+
+        setLiveJobs(liveJobs.data);
+        setEmployers(employers.data);
+        // console.log(liveJobs.data);
+        // console.log(employers.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  });
   return (
     <>
       <div className="bg-white py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-gray-600 text-sm">
-            Search 152,981 jobs from 10,117 companies
+            Search {liveJobs} jobs from {employers} companies
           </p>
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>

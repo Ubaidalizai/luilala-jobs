@@ -24,11 +24,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       minlength: 8,
-      //match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
     },
     isAdmin: {
       type: Boolean,
-      default: 'false',
+      default: false,
     },
     isActive: {
       type: Boolean,
@@ -47,16 +46,22 @@ const userSchema = mongoose.Schema(
         ref: 'Job',
       },
     ],
+    favoriteJobs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Job',
+      },
+    ],
     resetPasswordToken: String,
     resetPasswordExpires: Date,
   },
-
   {
     timestamps: true,
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-//Virtual populat
+
+// Virtual populate for job alerts
 userSchema.virtual('jobAlerts', {
   ref: 'JobAlert',
   localField: '_id',
