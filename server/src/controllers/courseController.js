@@ -73,3 +73,21 @@ export const courseCategories = asyncHandler(async (req, res) => {
 
   res.status(200).json({ result });
 });
+
+export const courseCategoriesNames = asyncHandler(async (req, res) => {
+  const result = await Course.distinct('category');
+
+  res.status(200).json(result);
+});
+
+export const coursesTypes = asyncHandler(async (req, res) => {
+  const coursesTypes = await Course.distinct('type');
+
+  res.status(200).json(coursesTypes);
+});
+
+export const coursesDurations = asyncHandler(async (req, res) => {
+  const coursesDurations = await Course.distinct('duration');
+
+  res.status(200).json(coursesDurations);
+});
