@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import CoursesSection from './CoursesSection';
+import axios from 'axios';
 
 const ContentContainer = () => {
   const [showCategory, setShowCategory] = useState(true);
   const [showType, setShowType] = useState(false);
   const [showDuration, setShowDuration] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [types, setTypes] = useState([]);
+  const [durations, setDurations] = useState([]);
 
   const handleCategoryToggle = () => {
     setShowCategory((prevState) => !prevState);
@@ -19,38 +23,54 @@ const ContentContainer = () => {
     setShowDuration((prevState) => !prevState);
   };
 
-  const courseNames = [
-    'Introduction to Programming',
-    'Data Structures and Algorithms',
-    'Web Development Fundamentals',
-    'Machine Learning for Beginners',
-    'Cybersecurity Essentials',
-    'Mobile App Development',
-    'Database Management Systems',
-    'Artificial Intelligence and Robotics'
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      const [categories, types, durations] = await Promise.all([
+        axios.get('http://127.0.0.1:3000/api/v1/cours/categories/name'),
+        axios.get('http://127.0.0.1:3000/api/v1/cours/types'),
+        axios.get('http://127.0.0.1:3000/api/v1/cours/duration'),
+      ]);
+      console.log(categories.data);
 
-  const courseTypes = [
-    'Online',
-    'In-Person',
-    'Hybrid',
-    'Self-Paced',
-    'Instructor-Led',
-    'Hands-On',
-    'Video-Based',
-    'Interactive'
-  ];
+      setCategories(categories.data);
+      setTypes(types.data);
+      setDurations(durations.data);
+    };
+    fetchData();
+  }, []);
 
-  const courseDurations = [
-    '1 week',
-    '1 month',
-    '3 months',
-    '6 months',
-    '1 year',
-    '2 years',
-    '4 years',
-    'Lifetime Access'
-  ];
+  // const courseNames = [
+  //   'Introduction to Programming',
+  //   'Data Structures and Algorithms',
+  //   'Web Development Fundamentals',
+  //   'Machine Learning for Beginners',
+  //   'Cybersecurity Essentials',
+  //   'Mobile App Development',
+  //   'Database Management Systems',
+  //   'Artificial Intelligence and Robotics'
+  // ];
+
+  // const courseTypes = [
+  //   'Online',
+  //   'In-Person',
+  //   'Hybrid',
+  //   'Self-Paced',
+  //   'Instructor-Led',
+  //   'Hands-On',
+  //   'Video-Based',
+  //   'Interactive'
+  // ];
+
+  // const courseDurations = [
+  //   '1 week',
+  //   '1 month',
+  //   '3 months',
+  //   '6 months',
+  //   '1 year',
+  //   '2 years',
+  //   '4 years',
+  //   'Lifetime Access'
+  // ];
 
   return (
     <div className="flex flex-col lg:flex-row p-4 lg:p-12 gap-4">
@@ -69,7 +89,7 @@ const ContentContainer = () => {
         {showCategory && (
           <div className="mt-2 mb-4">
             <ul className="space-y-2">
-              {courseNames.map((courseName, index) => (
+              {categories.map((courseName, index) => (
                 <li key={index}>
                   <a
                     href="#"
@@ -96,7 +116,7 @@ const ContentContainer = () => {
         {showType && (
           <div className="my-4">
             <ul className="space-y-2">
-              {courseTypes.map((courseType, index) => (
+              {types.map((courseType, index) => (
                 <li key={index}>
                   <a
                     href="#"
@@ -123,7 +143,7 @@ const ContentContainer = () => {
         {showDuration && (
           <div className="my-4">
             <ul className="space-y-2">
-              {courseDurations.map((courseDuration, index) => (
+              {durations.map((courseDuration, index) => (
                 <li key={index}>
                   <a
                     href="#"
