@@ -1,27 +1,64 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import CoursesNavigation from './CoursesNavigation';
 import BackgroundImage from '../assets/bgcourses4.jpg';
 import Rating from './Rating';
 import OnlineCourses from './OnlineCourses';
 import TrainNewSkill from './TrainNewSkill';
 import PopulerCourse from './PopulerCourse';
-import Logo1 from '../assets/firstLogo.png';
-import Logo2 from '../assets/secondLogo.png';
-import Logo3 from '../assets/thirdLogo.png';
-import Logo4 from '../assets/fourthLof.png';
-import Logo5 from '../assets/fifthLogo.png';
 import BackgroundImage2 from '../assets/coursebg2.jpg';
 import { FaBookOpen, FaClipboardList, FaUserGraduate } from 'react-icons/fa';
 
 export default function CoursesHome() {
-  const [studentCount, setStudentCount] = useState(0);
-  const [bookCount, setBookCount] = useState(0);
+   const [studentCount, setStudentCount] = useState(0);
+  const [courseCount, setCourseCount] = useState(0);
   const [lessons, setLessons] = useState(0);
+ 
+  const [logos, setLogos] = useState([]);
 
   useEffect(() => {
+      const fetchCount = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:3000/api/v1/cours/count'); // Replace with your actual API endpoint
+        setCourseCount(response.data);
+        console.log()
+      } catch (error) {
+        console.error('Error fetching count:', error);
+      }
+      };
+    
+      const fetchCount1 = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:3000/api/v1/cours/lessons'); // Replace with your actual API endpoint
+        setLessons(response.data);
+        console.log()
+      } catch (error) {
+        console.error('Error fetching count:', error);
+      }
+      };
+      const fetchCount2 = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:3000/api/v1/cours/student'); // Replace with your actual API endpoint
+        setStudentCount(response.data);
+        console.log()
+      } catch (error) {
+        console.error('Error fetching count:', error);
+      }
+    };
+
+    fetchCount();
+    fetchCount1();
+    fetchCount2();
+
+    axios.get('http://127.0.0.1:3000/api/v1/employer/logos').then(response => {
+      setLogos(response.data)
+    })
+      .catch(error => {
+        console.error('Error fetching logos:', error);
+      });
     const lessonsIntervalId = setInterval(() => {
-      setLessons((prevCount) => {
-        if (prevCount >= 550) {
+      setStudentCount((prevCount) => {
+        if (prevCount >=studentCount ) {
           clearInterval(lessonsIntervalId);
           return prevCount;
         }
@@ -30,8 +67,8 @@ export default function CoursesHome() {
     }, 4000 / 700);
 
     const bookCountIntervalId = setInterval(() => {
-      setBookCount((prevCount) => {
-        if (prevCount >= 850) {
+     setLessons((prevCount) => {
+        if (prevCount >= lessons) {
           clearInterval(bookCountIntervalId);
           return prevCount;
         }
@@ -40,8 +77,8 @@ export default function CoursesHome() {
     }, 4000 / 700);
 
     const studentCountIntervalId = setInterval(() => {
-      setStudentCount((prevCount) => {
-        if (prevCount >= 1250) {
+      setCourseCount((prevCount) => {
+        if (prevCount >= courseCount) {
           clearInterval(studentCountIntervalId);
           return prevCount;
         }
@@ -54,7 +91,7 @@ export default function CoursesHome() {
       clearInterval(bookCountIntervalId);
       clearInterval(studentCountIntervalId);
     };
-  }, []);
+  },[]);
 
   return (
     <div>
@@ -108,25 +145,17 @@ export default function CoursesHome() {
   All New Skills Academy Courses Come With Lifetime Access!
 </div>
       <PopulerCourse />
-      <div className="bg-[#fff] py-8">
+      <div className="bg-[#fff] p-6 sm:p-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl text-center font-bold text-gray-900 mb-12">Learn with confidence</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            <div>
-              <img src={Logo1} alt="" className="h-32 w-auto mx-auto" />
-            </div>
-            <div>
-              <img src={Logo2} alt="" className="h-32 w-auto mx-auto" />
-            </div>
-            <div>
-              <img src={Logo3} alt="" className="h-32 w-auto mx-auto" />
-            </div>
-            <div>
-              <img src={Logo4} alt="" className="h-32 w-auto mx-auto" />
-            </div>
-            <div>
-              <img src={Logo5} alt="" className="h-32 w-auto mx-auto" />
-            </div>
+          <h2 className="text-4xl sm:text-5xl font-bold text-center text-gray-900 mb-8 sm:mb-12">
+            Learn with confidence
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+            {logos.slice(0, 5).map((logo, index) => (
+              <div key={index}>
+                <img src={logo.logo} alt={`Logo ${index + 1}`} className="h-20 sm:h-32 w-auto" />
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -140,21 +169,21 @@ export default function CoursesHome() {
               <p className="text-gray-500">
                 <FaBookOpen className="h-8 w-8 mx-auto" />
               </p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{studentCount}</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{courseCount}</p>
               <p className="text-gray-500">Total courses</p>
             </div>
             <div className="bg-white shadow-lg rounded-lg p-6 text-center">
               <p className="text-gray-500">
                 <FaUserGraduate className="h-8 w-8 mx-auto" />
               </p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{lessons}</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{studentCount}</p>
               <p className="text-gray-500">Total Students</p>
             </div>
             <div className="bg-white shadow-lg rounded-lg p-6 text-center">
               <p className="text-gray-500">
                 <FaClipboardList className="h-8 w-8 mx-auto" />
               </p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{bookCount}</p>
+              <p className="text-3xl font-bold text-gray-900 mt-2">{lessons}</p>
               <p className="text-gray-500">Total Lessons</p>
             </div>
           </div>

@@ -37,7 +37,7 @@ function SearchResults() {
             </div>
           </>
         ) : (
-          <p className="text-white text-center">No jobs found.</p>
+          <p className="text-white text-center">No jobs foun.</p>
         )}
       </div>
     </div>

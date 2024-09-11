@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { FaStar, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import FutureImg from '../assets/future.png';
 
@@ -13,7 +14,7 @@ const reviewData = [
 
 export default function Rating() {
   const [currentIndex, setCurrentIndex] = useState(0);
-
+ 
   const handlePrevClick = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + reviewData.length) % reviewData.length);
   };

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import SearchResults from './components/SearchResults';
 import JobDetails1 from './components/JobDetails';
 import SearchJob from './pages/SearchJob';
+import SecondSearchResult from './components/SecondSearchResult';
 import JobDetails from './pages/JobDetails';
 import CvBuilder from './pages/CvBuilder';
 import JobAlerts from './pages/JobAlerts';
@@ -38,6 +39,8 @@ function App() {
         <Route path="/search-results" element={<SearchResults />} />
         <Route path="/job-details/:id" element={<JobDetails1 />} />
         <Route path="/searchjob" element={<SearchJob />} />
+        <Route path="/secondSearch-Result" element={<SecondSearchResult />} />
+      
         <Route path="/courseshome" element={<CoursesHome />} />
         <Route path="/onlinecourses" element={<OnlineCourse />} />
         <Route path="/stafftraining" element={<Stafftraining />} />
