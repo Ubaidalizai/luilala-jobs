@@ -15,6 +15,7 @@ import {
   updateEmployerPhoto,
   updatePassword,
   employersLogos,
+  getAllJobsOfCurrentEmployer,
 } from '../controllers/EmployerController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
@@ -28,6 +29,7 @@ router.route('/logout').post(logoutCurrentEmployer);
 router.route('/search').get(authenticate, searchEmployerByName);
 router.route('/update-password').patch(authenticate, updatePassword);
 router.route('/logos').get(employersLogos);
+router.route('/jobs').get(authenticate, getAllJobsOfCurrentEmployer);
 
 router.patch(
   '/updateMe',
