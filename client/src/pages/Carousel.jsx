@@ -1,54 +1,57 @@
-// Carousel.js
-// import Swiper core and required modules
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
-import logo1 from '../assets/microsoft.png';
-import logo2 from '../assets/logo2.jpg';
-import logo3 from '../assets/logo3.png';
-import logo5 from '../assets/logo5.png';
-import logo6 from '../assets/logo6.png';
-import logo7 from '../assets/logo7.png';
-import logo8 from '../assets/logo8.png';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 
-export default () => {
+const Carousel = () => {
+  const [logos, setLogos] = useState([]);
+  const slidesPerPage = 4;
+  const slideInterval = 10; // Change the slide every 10 seconds
+
+
+  useEffect(() => {
+   const fetchData = async () => {
+      const data = await axios.get(
+        'http://127.0.0.1:3000/api/v1/employer/logos'
+      );
+      const allLogos = data.data.map((logo) => logo.logo);
+      setLogos(allLogos);
+    };
+    
+    const interval = setInterval(() => {
+      setCurrentSlide(
+        (prevSlide) => (prevSlide + 1) % Math.ceil(logos.length / slidesPerPage)
+      );
+    }, slideInterval * 1000);
+
+    fetchData();
+    return () => clearInterval(interval);
+  }, [logos.length, slidesPerPage, slideInterval]);
+
+
   return (
     <Swiper
-      // install Swiper modules
       modules={[Navigation, Pagination, Scrollbar, A11y]}
       spaceBetween={40}
       className="w-full max-w-[800px] mx-auto flex items-center justify-center p-12"
       slidesPerView={3}
       navigation
       pagination={{ clickable: true }}
-      // scrollbar={{ draggable: true }}
     >
-      <SwiperSlide>
-        <img src={logo1} alt="company's logo" className="w-[100px] h-[100px] object-contain" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src={logo2} alt="company's logo" className="w-[100px] h-[100px] object-contain" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src={logo3} alt="company's logo" className="w-[100px] h-[100px] object-contain" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src={logo5} alt="company's logo" className="w-[100px] h-[100px] object-contain" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src={logo6} alt="company's logo" className="w-[100px] h-[100px] object-contain" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src={logo7} alt="company's logo" className="w-[100px] h-[100px] object-contain" />
-      </SwiperSlide>
-      <SwiperSlide>
-        <img src={logo8} alt="company's logo" className="w-[100px] h-[100px] object-contain" />
-      </SwiperSlide>
+      {logos.length > 0 ? (
+        logos.map((image, index) => (
+          <SwiperSlide key={index}>
+            <img src={image} alt={`Company logo ${index + 1}`} className="w-[100px] h-[100px] object-contain" />
+          </SwiperSlide>
+        ))
+      ) : (
+        <p>No images available</p>
+      )}
     </Swiper>
   );
 };
+export default Carousel;

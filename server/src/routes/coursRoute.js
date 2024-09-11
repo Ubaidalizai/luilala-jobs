@@ -7,14 +7,18 @@ import {
   updateCourseByID,
   deleteCourseByID,
   courseCategories,
+
   courseCategoriesNames,
   coursesTypes,
   coursesDurations,
+
+  searchCoursByName,
 } from '../controllers/courseController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
+router.get('/searchCourse', searchCoursByName);
 
 router.get('/categories', courseCategories);
 router.get('/types', coursesTypes);

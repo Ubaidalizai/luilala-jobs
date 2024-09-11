@@ -15,6 +15,8 @@ import {
   resizeUserPhoto,
   updateUserPhoto,
   applyJob,
+  addFavoriteJob,
+  getFavoriteJobs,
 } from '../controllers/userController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
@@ -24,7 +26,13 @@ router.route('/register').post(createUser);
 router.route('/auth').post(loginUser);
 router.route('/logout').post(logoutCurrentUser);
 
-router.patch('/updateMe', authenticate, uploadUserPhoto, resizeUserPhoto, updateUserPhoto);
+router.patch(
+  '/updateMe',
+  authenticate,
+  uploadUserPhoto,
+  resizeUserPhoto,
+  updateUserPhoto
+);
 
 router
   .route('/profile')
@@ -36,5 +44,12 @@ router
   .get(authenticate, authorizeAdmin, findUserByID)
   .patch(authenticate, authorizeAdmin, updateUserById)
   .delete(authenticate, authorizeAdmin, deleteUserByID);
+
+// Add job to favorites
+router.route('/addFavorites').post(authenticate, addFavoriteJob);
+// Get all favorite jobs
+router.route('/getFavorites').get(authenticate, getFavoriteJobs);
+
+
 
 export default router;

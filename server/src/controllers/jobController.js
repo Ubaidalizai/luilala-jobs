@@ -2,9 +2,9 @@ import Job from '../models/jobsModel.js';
 import Employer from '../models/EmployersModel.js';
 import CV from '../models/CV_Model.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
+
 import JobAlert from '../models/jobAlertModel.js';
 import sendEmailWithMatchingJobs from '../utils/sendEmail.js';
-
 export const checkIfJobMatchesAlert = (job, alert) => {
   return (
     (alert.titleOrKeyword && job.title.includes(alert.titleOrKeyword)) ||
@@ -12,6 +12,10 @@ export const checkIfJobMatchesAlert = (job, alert) => {
     (alert.location && job.location.includes(alert.location))
   );
 };
+
+import path from 'path';
+import { count } from 'console';
+import User from '../models/userModel.js';
 
 export const findJobs = async (req, res) => {
   try {
@@ -28,8 +32,10 @@ export const findJobs = async (req, res) => {
       location,
       company,
     } = req.query;
+
     const queryObject = {};
 
+    // Add filters dynamically based on the request query
     if (title) {
       queryObject.title = { $regex: title, $options: 'i' };
     }
@@ -51,7 +57,7 @@ export const findJobs = async (req, res) => {
     }
 
     if (maxSalary) {
-      queryObject.maxSalary = { $lte: maxSalary };
+      queryObject.maxSalary = { ...queryObject.maxSalary, $lte: maxSalary };
     }
 
     if (jobType) {
@@ -74,7 +80,12 @@ export const findJobs = async (req, res) => {
       queryObject.company = { $regex: company, $options: 'i' };
     }
 
-    const jobs = await find(queryObject);
+    // Fetch the jobs from the database with the query and populate the employerName field
+    const jobs = await Job.find(queryObject)
+      .populate('empId', 'employerName logo') // Populating only the employerName field
+      .sort({ createdAt: -1 })
+      .exec();
+
     res.status(200).json({
       length: jobs.length,
       jobs,
@@ -188,7 +199,6 @@ export const getLocations = async (req, res) => {
     });
 
     res.status(200).json({
-      count: locations.length,
       locations,
     });
   } catch (error) {
@@ -220,9 +230,40 @@ export const getIndustries = async (req, res) => {
           'No live job postings found with associated employer industries.',
       });
     } else {
+      res.status(200).json(Array.from(industries));
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// This for search part
+export const getIndustriess = async (req, res) => {
+  try {
+    // Find all the live jobs and populate the employer field
+    const liveJobs = await Job.find({
+      liveTime: { $gte: new Date() },
+    }).populate('employer');
+
+    // Create a set to store unique industries
+    const industries = new Set();
+
+    // Iterate through the live jobs and add the employer's industry to the set
+    liveJobs.forEach((job) => {
+      if (job.employer && job.employer.industry) {
+        industries.add(job.employer.industry);
+      }
+    });
+
+    // Check if the industries set is empty
+    if (industries.size === 0) {
       res.status(200).json({
-        count: industries.size,
-        industries: Array.from(industries),
+        message:
+          'No live job postings found with associated employer industries.',
+      });
+    } else {
+      res.status(200).json({
+        indestres: Array.from(industries),
       });
     }
   } catch (error) {
@@ -286,7 +327,6 @@ export const getCompanys = async (req, res) => {
     );
 
     res.status(200).json({
-      count: companies.length,
       Company: companies,
     });
   } catch (error) {
@@ -354,3 +394,29 @@ export const getCompanysLength = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const trendingJobs = [
+  'Artificial Intelligence (AI) Specialist',
+  'Data Scientist',
+  'Cybersecurity Specialist',
+  'Cloud Computing Engineer',
+  'Full Stack Developer',
+  'Digital Marketing Specialist',
+  'Health Informatics Specialist',
+  'Renewable Energy Engineer',
+  'UX/UI Designer',
+  'Supply Chain Management Specialist',
+];
+
+export const getAllTrending = asyncHandler(async (req, res) => {
+  // Find all jobs that are live (with liveTime greater than or equal to current time)
+  const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
+
+  // Filter the jobs to include only those with titles in the trendingJobs array
+  const trendingLiveJobTitles = jobs
+    .filter((job) => trendingJobs.includes(job.title))
+    .map((job) => job.title); // Extract only the title of each job
+
+  // Return the list of trending job titles
+  res.status(200).json(trendingLiveJobTitles);
+});

@@ -36,7 +36,9 @@ const TabsComponentCompany = () => {
       'IT', 'Brandon James', 'Health Care', 'Financial', 'Carrington West',
       'Engineering', 'Education', 'Distribution', 'Construction', 'Commercial',
       'Automotive', 'Administration', 'Accounting'
-    ]}
+    ]
+    }
+    
   ];
 
   const handleTabClick = (tab) => {

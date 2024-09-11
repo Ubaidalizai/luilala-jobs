@@ -91,3 +91,23 @@ export const coursesDurations = asyncHandler(async (req, res) => {
 
   res.status(200).json(coursesDurations);
 });
+
+export const searchCoursByName = async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: 'Course name is required for search' });
+    }
+
+    // Use a regular expression to perform a case-insensitive search
+    const courses = await Course.find({
+      name: { $regex: name, $options: 'i' },
+    });
+
+    res.status(200).json({ count: courses.length, courses });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};

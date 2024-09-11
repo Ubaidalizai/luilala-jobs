@@ -261,6 +261,58 @@ const applyJob = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Job application successful' });
 });
 
+// Add job to favorites
+const addFavoriteJob = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { jobId } = req.body;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!user.favoriteJobs.includes(jobId)) {
+      user.favoriteJobs.push(jobId);
+      await user.save();
+      return res.status(200).json({
+        message: 'Job added to favorites',
+        user,
+      });
+    } else {
+      user.favoriteJobs = user.favoriteJobs.filter(
+        (job) => job.toString() !== jobId
+      );
+      await user.save();
+      return res.status(200).json({
+        message: 'Job removed from favorites',
+        user,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to add job to favorites' });
+  }
+};
+
+// Remove job from favorites
+
+// Get all favorite jobs for the user
+const getFavoriteJobs = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate('favoriteJobs');
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    return res.status(200).json({ favoriteJobs: user.favoriteJobs });
+  } catch (error) {
+    return res.status(500).json({ error: 'Failed to fetch favorite jobs' });
+  }
+};
+
 export {
   createUser,
   loginUser,
@@ -275,4 +327,6 @@ export {
   deleteUserByID,
   updateUserById,
   applyJob,
+  addFavoriteJob,
+  getFavoriteJobs,
 };
