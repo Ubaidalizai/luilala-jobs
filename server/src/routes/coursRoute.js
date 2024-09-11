@@ -7,6 +7,11 @@ import {
   updateCourseByID,
   deleteCourseByID,
   courseCategories,
+
+  courseCategoriesNames,
+  coursesTypes,
+  coursesDurations,
+
   searchCoursByName,
 } from '../controllers/courseController.js';
 
@@ -16,6 +21,9 @@ const router = express.Router();
 router.get('/searchCourse', searchCoursByName);
 
 router.get('/categories', courseCategories);
+router.get('/types', coursesTypes);
+router.get('/duration', coursesDurations);
+router.get('/categories/name', courseCategoriesNames);
 
 router
   .route('/')

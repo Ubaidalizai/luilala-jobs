@@ -100,13 +100,17 @@ export default function CourseFilter() {
 
   const filterData = () => {
     return sampleCourses.filter((course) => {
-      const isCategoryMatch = selectedCategory === 'all' || course.category === selectedCategory;
-      const isTypeMatch = selectedTypes.length === 0 || selectedTypes.includes(course.type);
-      const isDurationMatch = selectedDuration === 'any' || (
-        selectedDuration === '0-0.5' && course.duration < 0.5 ||
-        selectedDuration === '0.5-10' && course.duration >= 0.5 && course.duration <= 10 ||
-        selectedDuration === '10-9999' && course.duration > 10
-      );
+      const isCategoryMatch =
+        selectedCategory === 'all' || course.category === selectedCategory;
+      const isTypeMatch =
+        selectedTypes.length === 0 || selectedTypes.includes(course.type);
+      const isDurationMatch =
+        selectedDuration === 'any' ||
+        (selectedDuration === '0-0.5' && course.duration < 0.5) ||
+        (selectedDuration === '0.5-10' &&
+          course.duration >= 0.5 &&
+          course.duration <= 10) ||
+        (selectedDuration === '10-9999' && course.duration > 10);
 
       return isCategoryMatch && isTypeMatch && isDurationMatch;
     });
@@ -137,9 +141,7 @@ export default function CourseFilter() {
                       <li key={category.id}>
                         <button
                           className={
-                            selectedCategory === category.id
-                              ? 'active'
-                              : ''
+                            selectedCategory === category.id ? 'active' : ''
                           }
                           onClick={() => handleCategoryChange(category.id)}
                         >
@@ -161,7 +163,10 @@ export default function CourseFilter() {
               <div id="typeData">
                 <div className="card-body">
                   {types.map((type) => (
-                    <div className="custom-control custom-checkbox" key={type.id}>
+                    <div
+                      className="custom-control custom-checkbox"
+                      key={type.id}
+                    >
                       <input
                         type="checkbox"
                         value={type.id}
@@ -187,7 +192,10 @@ export default function CourseFilter() {
               <div id="durationData">
                 <div className="card-body">
                   {durations.map((duration) => (
-                    <div className="custom-control custom-checkbox" key={duration.id}>
+                    <div
+                      className="custom-control custom-checkbox"
+                      key={duration.id}
+                    >
                       <input
                         type="radio"
                         name="duration"
@@ -197,7 +205,10 @@ export default function CourseFilter() {
                         onChange={() => handleDurationChange(duration.id)}
                         checked={selectedDuration === duration.id}
                       />
-                      <label htmlFor={duration.id} className="custom-control-label">
+                      <label
+                        htmlFor={duration.id}
+                        className="custom-control-label"
+                      >
                         {duration.name}
                       </label>
                     </div>

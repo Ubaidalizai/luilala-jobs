@@ -2,9 +2,20 @@ import nodemailer from 'nodemailer';
 import JobAlert from '../models/jobAlertModel.js';
 import User from '../models/userModel.js';
 import Job from '..//models/jobsModel.js';
-export const createJobAlert = async (req, res) => {
+import asyncHandler from '../middlewares/asyncHandler.js';
+import sendEmailWithMatchingJobs from '../utils/sendEmail.js';
+
+const checkForKeyword = (titleOrKeyword) => {
+  const isKeyword = titleOrKeyword.split(' ');
+  if (isKeyword.length > 1) {
+    return false;
+  }
+  return true;
+};
+
+export const createJobAlert = asyncHandler(async (req, res) => {
   try {
-    const { title, keywords, location, email } = req.body;
+    const { titleOrKeyword, location, email } = req.body;
     const userId = req.user._id; // Assuming userId is stored in req.user from the authentication middleware
 
     const user = await User.findById(userId);
@@ -14,7 +25,12 @@ export const createJobAlert = async (req, res) => {
     }
 
     // Check if a job alert with the same title and user ID already exists
-    const existingAlert = await JobAlert.findOne({ title, userId: user._id });
+    const existingAlert = await JobAlert.findOne({
+      title: titleOrKeyword,
+      keyword: titleOrKeyword,
+      location,
+    });
+
     if (existingAlert) {
       return res
         .status(400)
@@ -22,20 +38,17 @@ export const createJobAlert = async (req, res) => {
     }
 
     const newAlert = new JobAlert({
-      title,
-      keywords,
+      titleOrKeyword,
       location,
       email,
       userId: user._id,
     });
 
     await newAlert.save();
-
     // Check for matching live jobs
     const matchingJobs = await matchLiveJobs(
-      title,
-      location,
-      keywords.split(',')
+      location.split(','),
+      titleOrKeyword
     );
 
     if (matchingJobs.length > 0) {
@@ -55,62 +68,27 @@ export const createJobAlert = async (req, res) => {
       });
     }
   } catch (err) {
-    return res.status(400).json({ error: err.message });
+    res.status(400);
+    throw new Error(err);
   }
-};
+});
 
 // Function to match live jobs based on job alert criteria
-async function matchLiveJobs(title, location, keywords) {
-  const jobs = await Job.find({
-    title: { $regex: new RegExp(title, 'i') },
-    $or: [
-      { location: { $regex: new RegExp(location, 'i') } },
-      { city: { $regex: new RegExp(location, 'i') } },
-      { country: { $regex: new RegExp(location, 'i') } },
-    ],
-    $or: [
-      { keyword: { $regex: new RegExp(keywords.join('|'), 'i') } },
-      { city: { $regex: new RegExp(keywords.join('|'), 'i') } },
-      { location: { $regex: new RegExp(keywords.join('|'), 'i') } },
-    ],
-    liveTime: { $gte: new Date() },
-  });
+async function matchLiveJobs(location, titleOrKeyword) {
+  let queryObj = {};
 
+  if (location) {
+    queryObj.location = { $regex: location.join('|'), $options: 'i' };
+  }
+  if (checkForKeyword(titleOrKeyword)) {
+    queryObj.keyword = { $regex: titleOrKeyword, $options: 'i' };
+  } else {
+    queryObj.title = { $regex: titleOrKeyword, $options: 'i' };
+  }
+  // Apply liveTime filter if necessary
+  queryObj.liveTime = { $gt: new Date() };
+  const jobs = await Job.find(queryObj);
   return jobs;
-}
-
-// Function to send an email with matching jobs to the user
-async function sendEmailWithMatchingJobs(userEmail, jobs) {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'fazalullahrasoli10@gmail.com',
-      pass: 'prklwldhzdbyhavf',
-    },
-  });
-
-  const jobDetails = jobs
-    .map(
-      (job) => `
-    <h3>${job.title}</h3>
-    <p>${job.description}</p>
-    <p>Location: ${job.location}</p>
-    <p>Posted on: ${job.liveTime}</p>
-  `
-    )
-    .join('<br/>');
-
-  const mailOptions = {
-    from: 'fazalullahrasoli10@gmail.com',
-    to: userEmail,
-    subject: 'New Jobs Matching Your Alert',
-    html: `
-      <h2>Jobs Matching Your Alert: ${jobs[0].title}</h2>
-      ${jobDetails}
-    `,
-  };
-
-  await transporter.sendMail(mailOptions);
 }
 
 export const getAllJobAlerts = async (req, res) => {
