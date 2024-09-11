@@ -20,4 +20,13 @@ const addTestimonials = async (req, res) => {
   }
 };
 
-export { getTestimonials, addTestimonials };
+const getTestimonialsCount = async (req, res) => {
+  try {
+    const count = await Testimonial.countDocuments(); // Get the count of testimonials
+    res.json(count); // Return the count in a JSON response
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
+
+export { getTestimonials, addTestimonials, getTestimonialsCount };

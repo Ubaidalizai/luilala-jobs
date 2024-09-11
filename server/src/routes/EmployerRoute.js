@@ -7,6 +7,7 @@ import {
   getCurrentEmployerProfile,
   updateCurrentEmployerProfile,
   getEmployerByID,
+  getIndustryTypes,
   updateEmployerByID,
   deleteEmployerByID,
   searchEmployerByName,
@@ -28,7 +29,7 @@ router.route('/logout').post(logoutCurrentEmployer);
 router.route('/search').get(authenticate, searchEmployerByName);
 router.route('/update-password').patch(authenticate, updatePassword);
 router.route('/logos').get(employersLogos);
-
+router.route('/industries').get(getIndustryTypes);
 router.patch(
   '/updateMe',
   authenticate,

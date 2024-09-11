@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-
+import User from './userModel.js';
+import lessons from './LessonsModule.js';
 const courseSchema = mongoose.Schema(
   {
     name: {
@@ -48,6 +49,18 @@ const courseSchema = mongoose.Schema(
       default:
         'https://media.istockphoto.com/id/2158807730/video/digital-marketing-workshop-african-american-designer-learning-new-skills.jpg?s=640x640&k=20&c=wtzlRdAVJunMpXn0XEPAn0M6h9RtUcUgE6ktgKu_-UM=',
     },
+    lessons: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lesson', // References the Lesson model
+      },
+    ],
+    studentsEnrolled: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', // References the Student model
+      },
+    ],
   },
   { timestamps: true }
 );
