@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+
+export default function JobAlerts() {
 import axios from 'axios';
 
 export default function JobAlerts() {
@@ -108,70 +110,74 @@ export default function JobAlerts() {
                 </div>
               </form>
             </div>
-          <div className="second_part mt-8">
-            <div className="vedio bg-gray-100 rounded-lg p-6 shadow-md">
-              <div className="first mt-4">
-                <iframe
-                  width="100%"
-                  height="340"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
+            <div className="second_part mt-8">
+              <div className="vedio bg-gray-100 rounded-lg p-6 shadow-md">
+                <div className="first mt-4">
+                  <iframe
+                    width="100%"
+                    height="340"
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
 
-              <div className="mt-4 text-gray-600 font-bold">
-                Great companies hiring on CV-Library
+                <div className="mt-4 text-gray-600 font-bold">
+                  Great companies hiring on CV-Library
+                </div>
+                <img
+                  className="mt-2"
+                  src="https://www.cv-library.co.uk/assets/images/jbe-companies-1955cb7154c6b214ba90714c5dfcbff81569f747e0dcd968b4400fc5e16fc0cb.png"
+                  alt=""
+                />
               </div>
-              <img className='mt-2' src="https://www.cv-library.co.uk/assets/images/jbe-companies-1955cb7154c6b214ba90714c5dfcbff81569f747e0dcd968b4400fc5e16fc0cb.png" alt="" />
             </div>
-          </div>
-          <div className="thirdtext mt-8 bg-gray-100 rounded-lg p-6 shadow-md">
-            <h2 className="text-2xl font-bold text-gray-800">
-              Why Setup Job Alerts?
-            </h2>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-gray-800">
-                Get jobs straight to your email inbox
-              </h3>
-              <p className="text-gray-600 mt-2">
-                Keep up-to-date with the latest jobs matching your criteria.
-                Our alerts are easy to review on all devices, including
-                desktop, mobile and email.
-              </p>
+            <div className="thirdtext mt-8 bg-gray-100 rounded-lg p-6 shadow-md">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Why Setup Job Alerts?
+              </h2>
+              <div className="mt-4">
+                <h3 className="text-xl font-bold text-gray-800">
+                  Get jobs straight to your email inbox
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  Keep up-to-date with the latest jobs matching your criteria.
+                  Our alerts are easy to review on all devices, including
+                  desktop, mobile and email.
+                </p>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-xl font-bold text-gray-800">
+                  Be the first to apply
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  Stay ahead of the competition and be the first to apply to
+                  jobs on CV-Library. You can apply in seconds with our powerful
+                  1-Click apply process.
+                </p>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-xl font-bold text-gray-800">
+                  Quick & easy setup
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  It takes less than one minute to create a Job Alert on
+                  CV-Library. You can manage your alerts at any time and ensure
+                  you find the right jobs with ease.
+                </p>
+              </div>
+              <div className="mt-4">
+                <h3 className="text-xl font-bold text-gray-800">
+                  Create up to 20 alerts
+                </h3>
+                <p className="text-gray-600 mt-2">
+                  Create multiple alerts to receive the jobs you want. Keep an
+                  eye on different locations, job titles and industries, so you
+                  never miss a job again.
+                </p>
+              </div>
             </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-gray-800">
-                Be the first to apply
-              </h3>
-              <p className="text-gray-600 mt-2">
-                Stay ahead of the competition and be the first to apply to
-                jobs on CV-Library. You can apply in seconds with our powerful
-                1-Click apply process.
-              </p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-gray-800">
-                Quick & easy setup
-              </h3>
-              <p className="text-gray-600 mt-2">
-                It takes less than one minute to create a Job Alert on
-                CV-Library. You can manage your alerts at any time and ensure
-                you find the right jobs with ease.
-              </p>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-xl font-bold text-gray-800">
-                Create up to 20 alerts
-              </h3>
-              <p className="text-gray-600 mt-2">
-                Create multiple alerts to receive the jobs you want. Keep an
-                eye on different locations, job titles and industries, so you
-                never miss a job again.
-              </p>
-            </div>
-          </div>
           </div>
         </div>
       </div>

@@ -2,6 +2,17 @@ import Job from '../models/jobsModel.js';
 import Employer from '../models/EmployersModel.js';
 import CV from '../models/CV_Model.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
+
+import JobAlert from '../models/jobAlertModel.js';
+import sendEmailWithMatchingJobs from '../utils/sendEmail.js';
+export const checkIfJobMatchesAlert = (job, alert) => {
+  return (
+    (alert.titleOrKeyword && job.title.includes(alert.titleOrKeyword)) ||
+    job.keyword.includes(alert.titleOrKeyword) ||
+    (alert.location && job.location.includes(alert.location))
+  );
+};
+
 import path from 'path';
 import { count } from 'console';
 import User from '../models/userModel.js';
@@ -232,11 +243,30 @@ export const getAllJobs = asyncHandler(async (req, res) => {
 });
 
 export const createJob = asyncHandler(async (req, res) => {
-  const ndewJob = await Job.create(req.body);
-  res.status(201).json({
-    success: true,
-    data: ndewJob,
-  });
+  try {
+    const newJob = await Job.create(req.body);
+    const { title, keyword, location } = newJob;
+
+    const jobAlerts = await JobAlert.find({
+      location: { $regex: location, $options: 'i' },
+      $or: [
+        { titleOrKeyword: { $regex: title, $options: 'i' } },
+        { titleOrKeyword: { $regex: keyword, $options: 'i' } },
+      ],
+    });
+
+    jobAlerts.forEach(async (alert) => {
+      const isMatch = checkIfJobMatchesAlert(newJob, alert);
+      if (isMatch) {
+        // Notify the user
+        await sendEmailWithMatchingJobs(alert.email, newJob);
+      }
+    });
+
+    res.status(201).json(jobAlerts);
+  } catch (error) {
+    throw new Error(error);
+  }
 });
 
 export const getEmployerByJobId = asyncHandler(async (req, res) => {
@@ -270,8 +300,7 @@ export const getEmployerByJobId = asyncHandler(async (req, res) => {
 });
 
 export const getAllLiveJobs = asyncHandler(async (req, res) => {
-  const jobs = await Job.find({ liveTime: { $gte: Date.now() } });
-
+  const jobs = await Job.find({ liveTime: { $gte: new Date() } });
   res.status(200).json(jobs);
 });
 

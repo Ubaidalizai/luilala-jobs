@@ -16,7 +16,6 @@ const FuturedCompanys = () => {
       const allLogos = data.data.map((logo) => logo.logo);
       setLogos(allLogos);
     };
-    
     const interval = setInterval(() => {
       setCurrentSlide(
         (prevSlide) => (prevSlide + 1) % Math.ceil(logos.length / slidesPerPage)

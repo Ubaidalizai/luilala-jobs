@@ -322,3 +322,11 @@ export const employersLogos = asyncHandler(async (req, res) => {
 
   res.status(200).json(employersLogos);
 });
+
+export const getAllJobsOfCurrentEmployer = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+
+  const jobs = await Job.find({ empId: _id });
+
+  res.json(jobs);
+});

@@ -5,11 +5,11 @@ const JobSchema = mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, 'Please provide title'],
+      required: [true, 'Job title is required'],
     },
     keyword: {
       type: String,
-      required: [true, 'Please provide keyword'],
+      required: [true, 'Job keyword is required'],
     },
     country: {
       type: String,
@@ -32,7 +32,6 @@ const JobSchema = mongoose.Schema(
       enum: ['full-time', 'part-time', 'remote', 'internship'],
       default: 'full-time',
     },
-
     salaryType: {
       type: String,
       enum: ['hourly', 'daily', 'monthly'],
