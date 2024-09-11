@@ -7,6 +7,9 @@ import {
   updateCourseByID,
   deleteCourseByID,
   courseCategories,
+  courseCategoriesNames,
+  coursesTypes,
+  coursesDurations,
 } from '../controllers/courseController.js';
 
 import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
@@ -14,6 +17,9 @@ import { authenticate, authorizeAdmin } from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.get('/categories', courseCategories);
+router.get('/types', coursesTypes);
+router.get('/duration', coursesDurations);
+router.get('/categories/name', courseCategoriesNames);
 
 router
   .route('/')
