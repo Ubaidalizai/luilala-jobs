@@ -7,11 +7,10 @@ import {
   updateCourseByID,
   deleteCourseByID,
   courseCategories,
-
   courseCategoriesNames,
   coursesTypes,
   coursesDurations,
-
+  searchCourses1,
   searchCoursByName,
   getCountOfAllCourses,
   enrollStudentInCourse,
@@ -37,6 +36,7 @@ router.get('/lessons', getAllLessons);
 router.get('/:courseId/stats', getCourseStats);
 
 router.get('/searchCourse', searchCoursByName);
+router.get('/search-cours', searchCourses1);
 
 router.get('/categories', courseCategories);
 router.get('/types', coursesTypes);

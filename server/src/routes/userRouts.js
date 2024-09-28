@@ -26,6 +26,12 @@ router.route('/register').post(createUser);
 router.route('/auth').post(loginUser);
 router.route('/logout').post(logoutCurrentUser);
 
+// Get all favorite jobs
+router.route('/getFavorites').get(authenticate, getFavoriteJobs);
+
+// Add job to favorites
+router.route('/addFavorites').post(authenticate, addFavoriteJob);
+
 router.patch(
   '/updateMe',
   authenticate,
@@ -44,12 +50,5 @@ router
   .get(authenticate, authorizeAdmin, findUserByID)
   .patch(authenticate, authorizeAdmin, updateUserById)
   .delete(authenticate, authorizeAdmin, deleteUserByID);
-
-// Add job to favorites
-router.route('/addFavorites').post(authenticate, addFavoriteJob);
-// Get all favorite jobs
-router.route('/getFavorites').get(authenticate, getFavoriteJobs);
-
-
 
 export default router;

@@ -96,6 +96,7 @@ const createUser = asyncHandler(async (req, res) => {
 
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password);
   if ((!email, !password)) {
     throw new Error('Please fill all the fields');
   }
@@ -103,12 +104,13 @@ const loginUser = asyncHandler(async (req, res) => {
   const currentUser = await User.findOne({ email });
 
   if (currentUser && (await currentUser.isPasswordValid(password))) {
-    generateToken(res, currentUser._id);
+    let token = generateToken(res, currentUser._id);
     res.status(200).json({
       _id: currentUser._id,
       fullName: currentUser.fullName,
       email: currentUser.email,
       isAdmin: currentUser.isAdmin,
+      token,
     });
   } else {
     res.status(401);
@@ -297,19 +299,24 @@ const addFavoriteJob = async (req, res) => {
 // Remove job from favorites
 
 // Get all favorite jobs for the user
+
 const getFavoriteJobs = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    // Find the user and populate the favoriteJobs field
     const user = await User.findById(userId).populate('favoriteJobs');
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Return the favorite jobs populated from the Job model
     return res.status(200).json({ favoriteJobs: user.favoriteJobs });
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to fetch favorite jobs' });
+    return res
+      .status(500)
+      .json({ error: 'Failed to fetch favorite jobs', message: error.message });
   }
 };
 

@@ -15,7 +15,6 @@ export const getIndustryTypes = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Industries not found');
   }
-
   // Sort industries alphabetically
   industries.sort((a, b) => a.localeCompare(b));
 

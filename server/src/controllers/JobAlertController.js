@@ -26,7 +26,7 @@ export const createJobAlert = asyncHandler(async (req, res) => {
 
     // Check if a job alert with the same title and user ID already exists
     const existingAlert = await JobAlert.findOne({
-      title: titleOrKeyword,
+      titleOrKeyword,
       keyword: titleOrKeyword,
       location,
     });
@@ -69,6 +69,7 @@ export const createJobAlert = asyncHandler(async (req, res) => {
     }
   } catch (err) {
     res.status(400);
+    console.log(err);
     throw new Error(err);
   }
 });

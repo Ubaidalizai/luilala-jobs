@@ -5,6 +5,8 @@ import asyncHandler from '../middlewares/asyncHandler.js';
 
 import JobAlert from '../models/jobAlertModel.js';
 import sendEmailWithMatchingJobs from '../utils/sendEmail.js';
+
+
 export const checkIfJobMatchesAlert = (job, alert) => {
   return (
     (alert.titleOrKeyword && job.title.includes(alert.titleOrKeyword)) ||
@@ -148,82 +150,6 @@ export const findJobs = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// export const findJobs = async (req, res) => {
-//   try {
-//     const {
-//       title,
-//       keyword,
-//       country,
-//       minSalary,
-//       maxSalary,
-//       jobType,
-//       salaryType,
-//       industry,
-//       location,
-//       company,
-//     } = req.query;
-
-//     const queryObject = {};
-
-//     // Add filters dynamically based on the request query
-//     if (title) {
-//       queryObject.title = { $regex: title, $options: 'i' };
-//     }
-
-//     if (keyword) {
-//       queryObject.keyword = { $regex: keyword, $options: 'i' };
-//     }
-
-//     if (country) {
-//       queryObject.country = { $regex: country, $options: 'i' };
-//     }
-
-//     if (city) {
-//       queryObject.city = { $regex: city, $options: 'i' };
-//     }
-
-//     if (minSalary) {
-//       queryObject.minSalary = { $gte: minSalary };
-//     }
-
-//     if (maxSalary) {
-//       queryObject.maxSalary = { ...queryObject.maxSalary, $lte: maxSalary };
-//     }
-
-//     if (jobType) {
-//       queryObject.jobType = { $regex: jobType, $options: 'i' };
-//     }
-
-//     if (salaryType) {
-//       queryObject.salaryType = { $regex: salaryType, $options: 'i' };
-//     }
-
-//     if (industry) {
-//       queryObject.industry = { $regex: industry, $options: 'i' };
-//     }
-
-//     if (location) {
-//       queryObject.location = { $regex: location, $options: 'i' };
-//     }
-
-//     if (company) {
-//       queryObject.company = { $regex: company, $options: 'i' };
-//     }
-
-//     // Fetch the jobs from the database with the query and populate the employerName field
-//     const jobs = await Job.find(queryObject)
-//       .populate('empId', 'employerName logo industry') // Populating only the employerName field
-//       .sort({ createdAt: -1 })
-//       .exec();
-
-//     res.status(200).json({
-//       length: jobs.length,
-//       jobs,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
 
 export const getAllJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find({});

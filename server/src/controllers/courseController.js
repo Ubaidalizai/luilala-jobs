@@ -3,6 +3,43 @@ import Lesson from '../models/LessonsModule.js';
 import User from '../models/userModel.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
 
+//Search courses
+
+// Search and sort courses based on query parameters
+export const searchCourses1 = async (req, res) => {
+  try {
+    const { sortBy, category, searchQuery } = req.query;
+
+    // Build query object
+    const query = {};
+    if (category) query.category = category;
+    if (searchQuery) query.name = { $regex: searchQuery, $options: 'i' }; // Case-insensitive search
+
+    // Sort options
+    const sortOptions = {
+      'Price (high to low)': { price: -1 },
+      'Price (low to high)': { price: 1 },
+      'Rating (high to low)': { ratingAverage: -1 },
+      'Rating (low to high)': { ratingAverage: 1 },
+      'Release Date': { createdAt: -1 },
+      'Name A-Z': { name: 1 },
+      'Name Z-A': { name: -1 },
+      'Duration (short to long)': { duration: 1 },
+      'Duration (long to short)': { duration: -1 },
+    };
+
+    const sort = sortOptions[sortBy] || {};
+
+    // Fetch courses with filtering and sorting
+    const courses = await Course.find(query).sort(sort);
+
+    res.status(200).json({ courses });
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
 // Create a new course
 export const createCourse = asyncHandler(async (req, res) => {
   const newCourse = await Course.create(req.body);

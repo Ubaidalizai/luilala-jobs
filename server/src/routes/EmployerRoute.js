@@ -38,6 +38,12 @@ router.patch(
   resizeEmployerPhoto,
   updateEmployerPhoto
 );
+router.get('/industries', getIndustryTypes);
+router.get(
+  '/getAllJobsOfCurentEmployer',
+  authenticate,
+  getAllJobsOfCurrentEmployer
+);
 
 router
   .route('/profile')
