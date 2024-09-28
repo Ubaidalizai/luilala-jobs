@@ -23,16 +23,14 @@ app.use(cookieParser());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// CORS configuration
-const corsOptions = {
-  origin: 'http://localhost:5173', // Replace with your React app's URL
-  methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization',
-};
 
 // Use the CORS middleware with options
-app.use(cors(corsOptions));
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Replace with your React app's URL
+    credentials: true,
+  })
+);
 app.use('/api/v1/users', userRouts);
 app.use('/api/v1/cours', courseRoute);
 app.use('/api/v1/employer', employerRoute);

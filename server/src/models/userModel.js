@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 
 import Job from './jobsModel.js';
 import JobAlert from './jobAlertModel.js';
+import Course from './courseModel.js';
 
 const userSchema = mongoose.Schema(
   {
@@ -20,6 +21,12 @@ const userSchema = mongoose.Schema(
         message: 'Please enter a valid email address.',
       },
     },
+    enrolledCourses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course', // References the Course model
+      },
+    ],
     password: {
       type: String,
       required: true,

@@ -1,7 +1,19 @@
 import { FaStar } from 'react-icons/fa';
 import BlackCircle from '../assets/subscribe.png';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function PopulerCourse() {
+  const [countOfCours, setcountOfCours] = useState([]);
+  useEffect(() => {
+    axios.get('http://127.0.0.1:3000/api/v1/cours/count') // Update the URL with your backend endpoint
+     .then(response => {
+        setcountOfCours(response.data);
+      })
+     .catch(error => {
+        console.log(error);
+      });
+  },[])
   return (
     <div className="bg-[#1a3857] py-4 w-[90vw] md:w-[70vw] mx-auto my-6 sm:py-12 rounded-lg">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -37,7 +49,7 @@ export default function PopulerCourse() {
               <ul className="space-y-4 text-white">
                 <li className="flex items-center space-x-2">
                   <FaStar className="text-green-500" />
-                  <span>Study 700+ courses</span>
+                  <span>Study {countOfCours}+ courses</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <FaStar className="text-green-500" />

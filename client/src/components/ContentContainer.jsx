@@ -11,70 +11,41 @@ const ContentContainer = () => {
   const [types, setTypes] = useState([]);
   const [durations, setDurations] = useState([]);
 
-  const handleCategoryToggle = () => {
-    setShowCategory((prevState) => !prevState);
-  };
+  // State for selected filters
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedDurations, setSelectedDurations] = useState([]);
 
-  const handleTypeToggle = () => {
-    setShowType((prevState) => !prevState);
-  };
+  const handleCategoryToggle = () => setShowCategory((prevState) => !prevState);
+  const handleTypeToggle = () => setShowType((prevState) => !prevState);
+  const handleDurationToggle = () => setShowDuration((prevState) => !prevState);
 
-  const handleDurationToggle = () => {
-    setShowDuration((prevState) => !prevState);
+  const handleCheckboxChange = (value, setSelected, selected) => {
+    if (selected.includes(value)) {
+      setSelected(selected.filter((item) => item !== value));
+    } else {
+      setSelected([...selected, value]);
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const [categories, types, durations] = await Promise.all([
+      const [categoriesRes, typesRes, durationsRes] = await Promise.all([
         axios.get('http://127.0.0.1:3000/api/v1/cours/categories/name'),
         axios.get('http://127.0.0.1:3000/api/v1/cours/types'),
         axios.get('http://127.0.0.1:3000/api/v1/cours/duration'),
       ]);
-      console.log(categories.data);
-
-      setCategories(categories.data);
-      setTypes(types.data);
-      setDurations(durations.data);
+      setCategories(categoriesRes.data);
+      setTypes(typesRes.data);
+      setDurations(durationsRes.data);
     };
     fetchData();
   }, []);
 
-  // const courseNames = [
-  //   'Introduction to Programming',
-  //   'Data Structures and Algorithms',
-  //   'Web Development Fundamentals',
-  //   'Machine Learning for Beginners',
-  //   'Cybersecurity Essentials',
-  //   'Mobile App Development',
-  //   'Database Management Systems',
-  //   'Artificial Intelligence and Robotics'
-  // ];
-
-  // const courseTypes = [
-  //   'Online',
-  //   'In-Person',
-  //   'Hybrid',
-  //   'Self-Paced',
-  //   'Instructor-Led',
-  //   'Hands-On',
-  //   'Video-Based',
-  //   'Interactive'
-  // ];
-
-  // const courseDurations = [
-  //   '1 week',
-  //   '1 month',
-  //   '3 months',
-  //   '6 months',
-  //   '1 year',
-  //   '2 years',
-  //   '4 years',
-  //   'Lifetime Access'
-  // ];
-
   return (
     <div className="flex flex-col lg:flex-row p-4 lg:p-12 gap-4">
       <div className="w-full lg:w-1/4 bg-[#fff] p-4 lg:p-12 border-r border-gray-200">
+        {/* Category Section */}
         <div className="mb-4 lg:mb-8 mt-4 flex items-center justify-between">
           <div className="font-bold mb-2">Category</div>
           <button
@@ -89,19 +60,28 @@ const ContentContainer = () => {
         {showCategory && (
           <div className="mt-2 mb-4">
             <ul className="space-y-2">
-              {categories.map((courseName, index) => (
+              {categories.map((categoryName, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
-                    className="text-blue-600 hover:text-blue-800 focus:outline-none"
-                  >
-                    {courseName}
-                  </a>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={selectedCategories.includes(categoryName)}
+                      onChange={() =>
+                        handleCheckboxChange(categoryName, setSelectedCategories, selectedCategories)
+                      }
+                    />
+                    <span className="text-blue-600 hover:text-blue-800 focus:outline-none">
+                      {categoryName}
+                    </span>
+                  </label>
                 </li>
               ))}
             </ul>
           </div>
         )}
+
+        {/* Type Section */}
         <div className="mb-4 lg:mb-8 mt-4 flex items-center justify-between">
           <div className="font-bold mb-2">Type</div>
           <button
@@ -118,17 +98,26 @@ const ContentContainer = () => {
             <ul className="space-y-2">
               {types.map((courseType, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
-                    className="text-blue-600 hover:text-blue-800 focus:outline-none"
-                  >
-                    {courseType}
-                  </a>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={selectedTypes.includes(courseType)}
+                      onChange={() =>
+                        handleCheckboxChange(courseType, setSelectedTypes, selectedTypes)
+                      }
+                    />
+                    <span className="text-blue-600 hover:text-blue-800 focus:outline-none">
+                      {courseType}
+                    </span>
+                  </label>
                 </li>
               ))}
             </ul>
           </div>
         )}
+
+        {/* Duration Section */}
         <div className="mb-4 flex items-center justify-between">
           <div className="font-bold mb-2">Duration</div>
           <button
@@ -145,20 +134,33 @@ const ContentContainer = () => {
             <ul className="space-y-2">
               {durations.map((courseDuration, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
-                    className="text-blue-600 hover:text-blue-800 focus:outline-none"
-                  >
-                    {courseDuration}
-                  </a>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={selectedDurations.includes(courseDuration)}
+                      onChange={() =>
+                        handleCheckboxChange(courseDuration, setSelectedDurations, selectedDurations)
+                      }
+                    />
+                    <span className="text-blue-600 hover:text-blue-800 focus:outline-none">
+                      {courseDuration}
+                    </span>
+                  </label>
                 </li>
               ))}
             </ul>
           </div>
         )}
       </div>
+
+      {/* Courses Section */}
       <div className="w-full lg:w-3/4 p-4">
-        <CoursesSection />
+        <CoursesSection
+          selectedCategories={selectedCategories}
+          selectedTypes={selectedTypes}
+          selectedDurations={selectedDurations}
+        />
       </div>
     </div>
   );

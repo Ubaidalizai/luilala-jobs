@@ -8,6 +8,19 @@ import Job from '../models/jobsModel.js';
 import generateToken from '../utils/create-token.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
 
+export const getIndustryTypes = asyncHandler(async (req, res) => {
+  const industries = await Employer.distinct('industry');
+
+  if (!industries || industries.length === 0) {
+    res.status(404);
+    throw new Error('Industries not found');
+  }
+  // Sort industries alphabetically
+  industries.sort((a, b) => a.localeCompare(b));
+
+  res.json(industries);
+});
+
 // Multer setup
 const multerStorage = multer.memoryStorage();
 

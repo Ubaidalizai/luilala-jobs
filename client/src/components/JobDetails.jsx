@@ -1,16 +1,64 @@
-// JobDetails.js
-import React from 'react';
+
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaHeart } from 'react-icons/fa';
+import axios from 'axios';
 
 function JobDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const { job } = location.state || {};
 
+  // State to manage favorite button feedback
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
   if (!job) {
     return <p className="text-center text-white">No job details available.</p>;
   }
+
+  // Function to handle adding/removing the job from favorites
+  const handleFavoriteJob = async () => {
+    try {
+      setLoading(true);
+
+      // Retrieve token from localStorage
+      const jwt = localStorage.getItem('jwt');
+      if (!jwt) {
+        setMessage('You must be logged in to add this job to favorites.');
+        // Redirect to the login page after showing the message
+        setTimeout(() => navigate('/login'), 2000);
+        throw new Error('Token not found. Please log in.');
+      }
+
+      // Make the POST request with the token and credentials
+      const response = await axios.post(
+        'http://localhost:3000/api/v1/users/addFavorites',
+        { jobId: job._id },
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`, // Attach the token in Authorization header
+          },
+          withCredentials: true, // Ensure credentials are sent with the request
+        }
+      );
+
+      // Handle the response
+      if (response.data.message.includes('added')) {
+        setIsFavorite(true);
+        setMessage('Job added to favorites.');
+      } else if (response.data.message.includes('removed')) {
+        setIsFavorite(false);
+        setMessage('Job removed from favorites.');
+      }
+    } catch (error) {
+      console.error('Error adding/removing favorite job:', error);
+      setMessage(error.response?.data?.message || 'Failed to add/remove job to/from favorites.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-gradient-to-r from-[#002244] to-[#001122] min-h-screen flex flex-col items-center px-4 py-8 pb-16">
@@ -52,8 +100,25 @@ function JobDetails() {
               <p className="text-gray-800 mb-2"><strong>Maximum Salary:</strong> ${job.maxSalary}</p>
             </div>
           </div>
+
+          {/* Favorite Job Button */}
           <button
-            className="mt-8 bg-[#194162] text-white w-full py-3 rounded-full text-lg shadow-lg hover:bg-[#20517b] transition duration-300"
+            className={`mt-8 w-full py-3 rounded-full text-lg shadow-lg transition duration-300 
+              ${isFavorite ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-[#194162] text-white hover:bg-[#20517b]'} 
+            `}
+            onClick={handleFavoriteJob}
+            disabled={loading} // Disable button during loading
+          >
+            {loading ? 'Processing...' : isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+            <FaHeart className="inline ml-2" />
+          </button>
+
+          {/* Feedback message */}
+          {message && <p className="mt-4 text-center text-gray-700">{message}</p>}
+
+          {/* Back to Search Button */}
+          <button
+            className="mt-4 bg-[#194162] text-white w-full py-3 rounded-full text-lg shadow-lg hover:bg-[#20517b] transition duration-300"
             onClick={() => navigate(-1)}
           >
             Back to Search Results
@@ -61,8 +126,8 @@ function JobDetails() {
         </div>
       </div>
     </div>
-    ); 
-    
+  );
 }
 
 export default JobDetails;
+

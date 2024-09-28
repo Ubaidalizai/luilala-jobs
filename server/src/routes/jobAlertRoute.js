@@ -13,8 +13,8 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(authenticate, createJobAlert)
-  .get(authenticate, getAllJobAlerts);
+  .get(authenticate, getAllJobAlerts)
+  .post(authenticate, createJobAlert);
 
 router
   .route('/jobAlertsLengthForCurrentUser')

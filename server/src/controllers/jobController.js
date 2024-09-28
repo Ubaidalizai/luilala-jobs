@@ -5,6 +5,8 @@ import asyncHandler from '../middlewares/asyncHandler.js';
 
 import JobAlert from '../models/jobAlertModel.js';
 import sendEmailWithMatchingJobs from '../utils/sendEmail.js';
+
+
 export const checkIfJobMatchesAlert = (job, alert) => {
   return (
     (alert.titleOrKeyword && job.title.includes(alert.titleOrKeyword)) ||
@@ -28,9 +30,11 @@ export const findJobs = async (req, res) => {
       maxSalary,
       jobType,
       salaryType,
-      industry,
+      industry, // Industry from employer schema
       location,
       company,
+      postedIn, // Posted in: Last 10, 20, 30 days
+      sortBy, // Sorting options
     } = req.query;
 
     const queryObject = {};
@@ -57,7 +61,7 @@ export const findJobs = async (req, res) => {
     }
 
     if (maxSalary) {
-      queryObject.maxSalary = { ...queryObject.maxSalary, $lte: maxSalary };
+      queryObject.maxSalary = { $lte: maxSalary };
     }
 
     if (jobType) {
@@ -68,10 +72,6 @@ export const findJobs = async (req, res) => {
       queryObject.salaryType = { $regex: salaryType, $options: 'i' };
     }
 
-    if (industry) {
-      queryObject.industry = { $regex: industry, $options: 'i' };
-    }
-
     if (location) {
       queryObject.location = { $regex: location, $options: 'i' };
     }
@@ -80,15 +80,71 @@ export const findJobs = async (req, res) => {
       queryObject.company = { $regex: company, $options: 'i' };
     }
 
-    // Fetch the jobs from the database with the query and populate the employerName field
+    // Posted In: Filter by liveTime (posted within the last X days)
+    if (postedIn) {
+      const daysAgo = parseInt(postedIn, 10); // Convert postedIn value to an integer (e.g., "10" for Last 10 Days)
+      const dateThreshold = new Date();
+      dateThreshold.setDate(dateThreshold.getDate() - daysAgo); // Calculate the date X days ago
+      queryObject.liveTime = { $gte: dateThreshold }; // Filter jobs posted within the specified timeframe
+    }
+
+    // Define default sorting logic
+    let sortObject = {}; // Empty for default (relevance-based sorting)
+
+    // Sorting options
+    if (sortBy) {
+      switch (sortBy) {
+        case 'Date Posted':
+          sortObject = { liveTime: -1 }; // Most recent jobs first
+          break;
+        case 'Salary':
+          sortObject = { maxSalary: -1 }; // Highest salary first
+          break;
+        case 'Company Name':
+          sortObject = { 'empId.employerName': 1 }; // Sort alphabetically by company name
+          break;
+        case 'Relevance':
+        default:
+          sortObject = { createdAt: -1 }; // Default to relevance or newest jobs first
+          break;
+      }
+    }
+
+    // Fetch jobs and filter by industry from the employer model
     const jobs = await Job.find(queryObject)
-      .populate('empId', 'employerName logo') // Populating only the employerName field
-      .sort({ createdAt: -1 })
+      .populate({
+        path: 'empId',
+        select: 'employerName logo industry',
+        match: industry
+          ? { industry: { $regex: industry, $options: 'i' } }
+          : {}, // Filter jobs by employer's industry
+      })
+      .sort(sortObject) // Apply sorting logic
       .exec();
 
+    // Filter out jobs that don't have a matched employer industry (in case no match is found during populate)
+    const filteredJobs = jobs.filter((job) => job.empId);
+
+    // Calculate the number of days since the job was posted
+    const getDaysAgo = (date) => {
+      const today = new Date();
+      const postedDate = new Date(date);
+      const diffTime = today - postedDate;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+      return diffDays;
+    };
+
+    // Prepare response with formatted postedTime
+    const responseJobs = filteredJobs.map((job) => ({
+      ...job._doc,
+      postedTime: job.liveTime
+        ? `Last ${getDaysAgo(job.liveTime)} days`
+        : 'No live time', // Format liveTime
+    }));
+
     res.status(200).json({
-      length: jobs.length,
-      jobs,
+      length: responseJobs.length,
+      jobs: responseJobs,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

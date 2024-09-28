@@ -8,6 +8,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
 
   // Read the jwt from the 'jwt' cookie
   token = req.cookies.jwt;
+
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -15,7 +16,6 @@ const authenticate = asyncHandler(async (req, res, next) => {
       if (!user) {
         user = await Employer.findById(decoded.id).select('-password');
       }
-
       if (!user) {
         res.status(401);
         throw new Error('Not authorized, user not found!');
@@ -28,6 +28,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
     }
   } else {
     res.status(401);
+
     throw new Error('Not authorized, no token!');
   }
 });
