@@ -11,6 +11,8 @@ import jobRoute from './src/routes/jobsRouts.js';
 import jobAlertRoute from './src/routes/jobAlertRoute.js';
 import testimonialRoute from './src/routes/websiteReviewsRoute.js';
 import popularIndustriesRoute from './src/routes/popularIndustriesRoute.js';
+import career  from './src/routes/careerRoute.js';
+import agency  from './src/routes/agency_route.js';
 
 // utils
 import connectDB from './src/config/db.js';
@@ -38,5 +40,7 @@ app.use('/api/v1/job', jobRoute);
 app.use('/api/v1/jobAlert', jobAlertRoute);
 app.use('/api/v1/testimonial', testimonialRoute);
 app.use('/api/v1/populerIndustries', popularIndustriesRoute);
+app.use('/api/v1/career',career);
+app.use('/api/v1/agency',agency);
 const port = process.env.PORT || 3000;
 app.listen(port, console.log(`server is running on port ${port}...`));

@@ -329,3 +329,131 @@ export const getAllJobsOfCurrentEmployer = asyncHandler(async (req, res) => {
 
   res.json(jobs);
 });
+
+///////// *********** ////////////////
+
+
+////////////////// Agency Function ///////////
+
+export const searchAgencies = async (req, res) => {
+  var { agency } = req.query;
+  if (!agency) {
+    agency = "Popular";
+    const results = await Employer.find({ agency });
+
+    return res
+      .status(200)
+      .json({ "Total Agencys": results.length, data: results });
+  } else if (!["Popular", "County", "Industries"].includes(agency)) {
+    return res.status(400).json({ error: "Invalid agency type" });
+  }
+
+  try {
+    const results = await Employer.find({ agency });
+    res.json({
+      "Total Agencys": results.length,
+      data: results,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+///////////  By Campany Name get all Jobs that campany //////////////////////
+
+export const getAllJobsBycName = async (req, res) => {
+  const companyName = req.params.employeeName;
+
+  if (!companyName) {
+    return res.status(400).json({ error: "Company name is required" });
+  }
+  
+  try {
+    // Find the company by name
+    const company = await Employer.findOne({ employerName: companyName });
+
+    if (!company) {
+      return res.status(404).json({ error: "Company not found" });
+    }
+
+    // Find jobs associated with the company
+    const jobs = await Job.find({ empId: company._id }); // Querying Job model
+    
+    if (!jobs || jobs.length === 0) {
+      return res.status(404).json({ error: "Jobs not found" });
+    }
+
+    // Access job details
+    const jobDetails = jobs.map(job => ({
+      title: job.title,
+      location: job.location,
+      salary: {
+        min: job.minSalary,
+        max: job.maxSalary
+      }
+    }));
+
+    res.json({
+      total: jobs.length,
+      result: jobDetails
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+      ///////////  By Agency Type get all Jobs that campany //////////////////////
+
+      export const getAllJobsByAgencyType = async (req, res) => {
+        const companyName = req.params.employeeName;
+        const agencyType = req.params.agency;
+      
+        if (!companyName) {
+          return res.status(400).json({ error: "Company name is required" });
+        }
+        
+        try {
+          // Find the company by name and agency type
+          const company = await Employer.findOne({ 
+            employerName: companyName, 
+            agency: agencyType // Include agency type in the query
+          });
+      
+          if (!company) {
+            return res.status(404).json({ error: "Company not found" });
+          }
+          console.log("===============================================");
+          console.log(companyName);
+          console.log(agencyType);
+          
+          console.log(company);
+          
+          console.log("===============================================");
+          
+          // Find jobs associated with the company
+          const jobs = await Job.find({ empId: company._id }); // Querying Job model
+          
+          if (!jobs || jobs.length === 0) {
+            return res.status(404).json({ error: "Jobs not found" });
+          }
+      
+          // Access job details
+          const jobDetails = jobs.map(job => ({
+            title: job.title,
+            location: job.location,
+            salary: {
+              min: job.minSalary,
+              max: job.maxSalary
+            }
+          }));
+      
+          res.json({
+            total: jobs.length,
+            result: jobDetails
+          });
+      
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ error: "Internal Server Error" });
+        }
+      };
